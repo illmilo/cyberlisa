@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
 
 ROOT_URLCONF = 'api.urls'
@@ -112,8 +113,21 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
+# Add to top
+import os
 
-STATIC_URL = 'static/'
+# Static files configuration
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'api/static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
+
+# Debug mode handling
+if 'VERCEL' in os.environ:
+    DEBUG = False
+    ALLOWED_HOSTS = ['.vercel.app', '.now.sh']
+else:
+    DEBUG = True
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
