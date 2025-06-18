@@ -1,0 +1,67 @@
+{% extends 'dashboard/dashboard.html' %}
+{% block title %}Users{% endblock %}
+{% block header %}Users{% endblock %}
+{% load static %}
+{% block style %}
+<link rel="stylesheet" href="{% static 'users/css/style.css' %}" type="text/css">
+{% endblock %}
+{% block content %}
+</head>
+<body>
+    <div class="flextable">
+        <!-- Left Column -->
+        <div class="sidebar">
+            <div class="search-box">
+                <input type="text" placeholder="Search...">
+            </div>
+            
+            <div class="list">
+                <h2>{% block list-header %}User List{% endblock %}</h2>
+                {% block list-content %}
+                    {% for user in users %}
+                        <div class="list-item">{{user.username}}</div>
+                    {% endfor %}
+                {% endblock %}
+            </div>
+        </div>
+        
+        <!-- Right Column -->
+        <div class="main-content">
+            <h1>{% block main-content-header %}Create User{% endblock %}</h1>
+            
+            <form class="create-form">
+                {% block form-groups %}
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" placeholder="Enter username">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="role">Role</label>
+                        <select id="role">
+                            <option value="">Select role</option>
+                            {% for role in roles %}
+                                <option value="{{role.id}}">{{role.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="actions">Allowed Actions</label>
+                        <select id="actions" multiple>
+                            {% for action in actions %}
+                                <option value="{{action.id}}">{{action.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="activity">Activity Rate</label>
+                        <input type="text" id="activity" placeholder="Activity percentage">
+                    </div>
+                {% endblock %}
+                <button type="submit" class="submit-btn">{% block submit-btn %}Create User{% endblock %}</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
