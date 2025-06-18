@@ -92,19 +92,6 @@ h1 {
     background: linear-gradient(90deg, #A855F7, #7E22CE);
 }
 
-#blue img {
-    padding-bottom: 5px;
-    filter: invert(100%);
-}
-
-#green img {
-    filter: invert(80%);
-}
-
-#purple img {
-    filter: invert(100%);
-}
-
 hr {
     border: none;
     border-top: 1px solid #e0e0e0;
@@ -142,4 +129,8 @@ hr {
 a.stat-card {
     text-decoration: none;
     color:unset;
+}
+
+.container img {
+    width:35px;
 }
