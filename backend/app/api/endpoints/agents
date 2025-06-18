@@ -1,0 +1,12 @@
+from fastapi import APIRouter
+from typing import Optional
+from models import EmployeeModel
+from utils import json_to_dict_list
+from json_db import add_employee, upd_employee, dell_employee
+import os
+
+path_to_json = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'employees.json')
+
+app = APIRouter()
+
+

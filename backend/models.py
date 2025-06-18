@@ -27,3 +27,13 @@ class Website(BaseModel):
     id: int
     name: str
     url: str
+
+class EUpdateFilter(BaseModel):
+    id: int
+
+# Определение модели для новых данных студента
+class EmployeeUpdate(BaseModel):
+    role: RoleEnum = Field(..., description="Роль сотрудника")
+
+class EDeleteFilter(BaseModel):
+    id: int
