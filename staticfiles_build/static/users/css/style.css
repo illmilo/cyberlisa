@@ -125,10 +125,13 @@
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group #list1,
+span.anchor {
     width: 100%;
     padding: 14px;
-    border: 1px solid #ddd;
+    border: 1px solid #eaeaea;
+    background-color: #eaeaea;
     border-radius: 8px;
     font-size: 16px;
     transition: border 0.3s;
@@ -166,12 +169,83 @@
     .sidebar {
         flex: 0 0 auto;
     }
+    .flextable {
+        flex-direction: column;
+    }
 }
 
-select#actions {
+select[multiple] {
     height:49.5px;
 }
 
 .form-group input:invalid {
     background-color: rgb(255, 161, 161);
+}
+
+.dropdown-check-list {
+  display: inline-block;
+}
+
+.dropdown-check-list .anchor {
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  padding: 0;
+}
+
+.dropdown-check-list .anchor:after {
+  position: absolute;
+  content: "";
+  border-left: 2px solid black;
+  border-top: 2px solid black;
+  padding: 5px;
+  right: 10px;
+  top: 10%;
+  transform: rotate(-135deg);
+}
+
+.dropdown-check-list .anchor:active:after {
+  right: 8px;
+  top: 21%;
+}
+
+.dropdown-check-list ul.items {
+  padding: 2px;
+  display: none;
+  margin: 0;
+  border-top: none;
+}
+
+.dropdown-check-list ul.items li {
+  list-style: none;
+  position:relative;
+  margin-top:10px;
+}
+.dropdown-check-list ul.items li input[type="checkbox"] {
+    position:absolute;
+    top:50%;
+    transform: translateY(-50%);
+}
+
+.dropdown-check-list.visible .anchor {
+  color: #0094ff;
+}
+
+.dropdown-check-list.visible .items {
+  display: block;
+}
+
+/* Add transition for smooth rotation */
+.dropdown-check-list .anchor:after {
+  transition: transform 0.5s ease;
+}
+
+/* New class for rotated state */
+.dropdown-check-list.visible .anchor:after {
+  transform: rotate(45deg); /* Rotated position */
+  top: 40%; /* Adjust vertical positioning */
+}
+
+span.anchor {
+    color:#757575;
 }
