@@ -37,31 +37,40 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="role">Role</label>
-                        <select id="role">
-                            <option value="">Select role</option>
-                            {% for role in roles %}
-                                <option value="{{role.id}}">{{role.name}}</option>
-                            {% endfor %}
-                        </select>
+                        <label for="">Roles</label>
+                        
+                        <div id="list1" class="dropdown-check-list" tabindex="100" onclick="toggleCheckList(this);">
+                            <span class="anchor">Select roles</span>
+                            <ul class="items">
+                                {% for role in roles %}
+                                    <li><input type="checkbox">{{role.name}}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="actions">Allowed Actions</label>
-                        <select id="actions" multiple>
-                            {% for action in actions %}
-                                <option value="{{action.id}}">{{action.name}}</option>
-                            {% endfor %}
-                        </select>
+                        <label for="actions">Actions</label>
+                        <div id="list2" class="dropdown-check-list" tabindex="100" onclick="toggleCheckList(this);">
+                            <span class="anchor">Select actions</span>
+                            <ul class="items">
+                                {% for action in actions %}
+                                    <li><input type="checkbox">{{action.name}}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     </div>
                     
                     <div class="form-group">
                         <label for="activity">Activity Rate</label>
-                        <input type="text" id="activity" placeholder="Activity percentage">
+                        <input type="number" id="activity" min="1" max="100" placeholder="Activity percentage">
                     </div>
                 {% endblock %}
                 <button type="submit" class="submit-btn">{% block submit-btn %}Create User{% endblock %}</button>
             </form>
         </div>
     </div>
+{% endblock %}
+{% block script %}
+    <script src="{% static 'users/js/script.js' %}"></script>
 {% endblock %}
