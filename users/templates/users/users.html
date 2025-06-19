@@ -37,21 +37,18 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="">Roles</label>
-                        
-                        <div id="list1" class="dropdown-check-list" tabindex="100" onclick="toggleCheckList(this);">
-                            <span class="anchor">Select roles</span>
-                            <ul class="items">
-                                {% for role in roles %}
-                                    <li><input type="checkbox">{{role.name}}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
+                        <label for="role">Roles</label>
+                        <select id="role">
+                            <option value="">Select role</option>
+                            {% for role in roles %}
+                                <option value="{{role.id}}">{{role.name}}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     
                     <div class="form-group">
                         <label for="actions">Actions</label>
-                        <div id="list2" class="dropdown-check-list" tabindex="100" onclick="toggleCheckList(this);">
+                        <div class="dropdown-check-list" tabindex="100" onclick="toggleCheckList(this);">
                             <span class="anchor">Select actions</span>
                             <ul class="items">
                                 {% for action in actions %}
