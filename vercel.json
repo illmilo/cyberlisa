@@ -26,5 +26,15 @@
       "src": "/(.*)",
       "dest": "api/wsgi.py"
     }
-  ]
+  ],
+  "build":
+    {
+      "env": {
+        "DATABASE_URL": "@DATABASE_URL",
+        "PGHOST": "@PGHOST",
+        "PGDATABASE": "@PGDATABASE",
+        "PGUSER": "@PGUSER",
+        "PGPASSWORD": "@PGPASSWORD"
+      }
+    }
 }

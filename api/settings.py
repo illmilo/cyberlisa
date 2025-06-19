@@ -80,13 +80,47 @@ WSGI_APPLICATION = 'api.wsgi.app'
 # Note: Django modules for using databases are not support in serverless
 # environments like Vercel. You can use a database over HTTP, hosted elsewhere.
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+import os
+import dj_database_url
 
+# Database configuration
+if 'DATABASE_URL' in os.environ:
+    # Use pooled connection for Vercel
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ['DATABASE_URL'],
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+elif 'POSTGRES_URL' in os.environ:
+    # Fallback to Postgres URL
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ['POSTGRES_URL'],
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
+    # Local development with SQLite fallback
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
+
+# SSL configuration for PostgreSQL
+if 'postgres' in DATABASES['default']['ENGINE']:
+    DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -117,12 +151,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-# Add to top
-import os
 
 # Static files configuration
 STATIC_URL = '/static/'
