@@ -80,40 +80,27 @@ WSGI_APPLICATION = 'api.wsgi.app'
 # Note: Django modules for using databases are not support in serverless
 # environments like Vercel. You can use a database over HTTP, hosted elsewhere.
 
+# settings.py
 import os
-import dj_database_url
+from os import getenv
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Database configuration
-if 'DATABASE_URL' in os.environ:
-    # Use pooled connection for Vercel
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=os.environ['DATABASE_URL'],
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
+DATABASES = {
+'default': {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': getenv('PGDATABASE'),
+    'USER': getenv('PGUSER'),
+    'PASSWORD': getenv('PGPASSWORD'),
+    'HOST': getenv('PGHOST'),
+    'PORT': getenv('PGPORT', 5432),
+        'OPTIONS': {
+            'sslmode': 'require',
     }
-elif 'POSTGRES_URL' in os.environ:
-    # Fallback to Postgres URL
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=os.environ['POSTGRES_URL'],
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
-else:
-    # Local development with SQLite fallback
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
-    }
-
-# SSL configuration for PostgreSQL
-if 'postgres' in DATABASES['default']['ENGINE']:
-    DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
+}
+}
 
 # DATABASES = {
 #     'default': {
