@@ -1,4 +1,6 @@
-# LISA Web-Interface
+<img src="logo.png" width="35px" align="right">
+
+# CYBERLISA
 
 ## Demo
 
@@ -6,7 +8,7 @@
 
 ## Description
 
-Web interface for LISA with responsive design. Made with pure Django, HTML & CSS. Vercel integration.
+**Cyber Living Infrastructure Simulation Agent** (**CYBERLISA**) is a system that simulates realistic user behavior within an isolated training infrastructure of a cyber range.
 
 ## Local Run
 
@@ -25,3 +27,6 @@ git clone https://github.com/illmilo/cyberlisa.git
 cd cyberlisa
 vercel dev
 ```
+
+## License
+This project is licensed under MIT License. View [LICENSE](LICENSE) to learn more.
