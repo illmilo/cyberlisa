@@ -1,7 +1,15 @@
-from sqlalchemy import ForeignKey, text, Text
+from sqlalchemy import ForeignKey, text, Text, Table, Column
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.database import Base, str_uniq, int_pk, str_null_true
 from app.activities.models import Activity
+
+# Промежуточная таблица для связи many-to-many
+employee_activity = Table(
+    'employee_activity',
+    Base.metadata,
+    Column('employee_id', ForeignKey('employees.id'), primary_key=True),
+    Column('activity_id', ForeignKey('activitys.id'), primary_key=True)
+)
 
 class Employee(Base):
     id: Mapped[int_pk]
@@ -11,7 +19,7 @@ class Employee(Base):
     online: Mapped[bool]
     os: Mapped[str]
     activity_now: Mapped[int] = mapped_column(ForeignKey("activitys.id"), nullable=True)
-    activities: Mapped[list["Activity"]] = relationship("Activity", back_populates="employees")
+    activities: Mapped[list["Activity"]] = relationship("Activity", secondary=employee_activity, back_populates="employees")
 
     def __str__(self):
         return (f"{self.__class__.__name__}(id={self.id}, "
@@ -25,6 +33,7 @@ class Employee(Base):
 
     def __repr__(self):
         return str(self)
+    
     def to_dict(self): 
         return {
             "id": self.id,

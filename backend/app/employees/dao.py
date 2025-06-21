@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 from app.employees.models import Employee
 from app.activities.models import Activity
 from app.database import async_session_maker
@@ -44,7 +44,7 @@ class EmployeeDAO(BaseDAO):
         """Назначить активности сотруднику"""
         async with async_session_maker() as session:
             # Получаем сотрудника с загруженными активностями
-            query_employee = select(Employee).options(joinedload(Employee.activities)).filter_by(id=employee_id)
+            query_employee = select(Employee).options(selectinload(Employee.activities)).filter_by(id=employee_id)
             result_employee = await session.execute(query_employee)
             employee = result_employee.scalar_one_or_none()
             
@@ -56,8 +56,9 @@ class EmployeeDAO(BaseDAO):
             result_activities = await session.execute(query_activities)
             activities = result_activities.scalars().all()
             
-            # Назначаем активности сотруднику
-            employee.activities = activities
+            # Очищаем существующие активности и добавляем новые
+            employee.activities.clear()
+            employee.activities.extend(activities)
             
             await session.commit()
             await session.refresh(employee)
@@ -68,8 +69,11 @@ class EmployeeDAO(BaseDAO):
     async def add_activity_to_employee(cls, employee_id: int, activity_id: int):
         """Добавить одну активность сотруднику"""
         async with async_session_maker() as session:
-            # Получаем сотрудника
-            employee = await session.get(Employee, employee_id)
+            # Получаем сотрудника с загруженными активностями
+            query_employee = select(Employee).options(selectinload(Employee.activities)).filter_by(id=employee_id)
+            result_employee = await session.execute(query_employee)
+            employee = result_employee.scalar_one_or_none()
+            
             if not employee:
                 raise ValueError(f"Сотрудник с ID {employee_id} не найден")
             
@@ -78,8 +82,9 @@ class EmployeeDAO(BaseDAO):
             if not activity:
                 raise ValueError(f"Активность с ID {activity_id} не найдена")
             
-            # Добавляем активность к сотруднику
-            employee.activities.append(activity)
+            # Проверяем, нет ли уже такой активности
+            if activity not in employee.activities:
+                employee.activities.append(activity)
             
             await session.commit()
             await session.refresh(employee)
