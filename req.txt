@@ -3,3 +3,7 @@ requests
 pydantic
 asyncio
 croniter
+alembic
+asyncpg
+sqlalchemy
+pydantic-settings
