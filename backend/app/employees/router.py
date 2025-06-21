@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.employees.models import Employee
+from app.activities.models import Activity
 from app.database import async_session_maker
 from sqlalchemy import select
 from app.employees.dao import EmployeeDAO
@@ -30,14 +31,28 @@ async def get_employee_by_filter(request_body: RBEmp = Depends()) -> EmployeeSch
 @router_employees.post("/", summary = 'Создать нового сотрудника')
 async def create_employee(employee_data: EmployeeCreateSchema):
     async with async_session_maker() as session:
-        new_employee = Employee(
-            name=employee_data.name,
-            surname=employee_data.surname,
-            role=employee_data.role.value,
-            os=employee_data.os.value,
-            online=employee_data.online,
-            activity_now=employee_data.activity_now
-        )
+        # Создаем словарь с данными, исключая None значения
+        employee_dict = {
+            "name": employee_data.name,
+            "surname": employee_data.surname,
+            "role": employee_data.role.value,
+            "os": employee_data.os.value,
+            "online": employee_data.online,
+        }
+        
+        # Добавляем activity_now только если оно не None и не 0, и активность существует
+        if employee_data.activity_now is not None and employee_data.activity_now > 0:
+            # Проверяем, существует ли активность
+            activity = await session.get(Activity, employee_data.activity_now)
+            if activity:
+                employee_dict["activity_now"] = employee_data.activity_now
+            else:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Активность с ID {employee_data.activity_now} не найдена"
+                )
+        
+        new_employee = Employee(**employee_dict)
         session.add(new_employee)
         await session.commit()
         await session.refresh(new_employee)
@@ -57,7 +72,26 @@ async def update_employee(employee_id: int, employee_data: EmployeeUpdateSchema)
             update_data['role'] = update_data['role'].value
         if 'os' in update_data:
             update_data['os'] = update_data['os'].value
+        
+        # Обрабатываем activity_now отдельно
+        if 'activity_now' in update_data:
+            activity_now_value = update_data.pop('activity_now')
             
+            # Если activity_now равно 0 или None, устанавливаем None (убираем текущую активность)
+            if activity_now_value is None or activity_now_value == 0:
+                employee.activity_now = None
+            else:
+                # Проверяем, существует ли активность
+                activity = await session.get(Activity, activity_now_value)
+                if activity:
+                    employee.activity_now = activity_now_value
+                else:
+                    raise HTTPException(
+                        status_code=400, 
+                        detail=f"Активность с ID {activity_now_value} не найдена"
+                    )
+            
+        # Обновляем остальные поля
         for field, value in update_data.items():
             setattr(employee, field, value)
         

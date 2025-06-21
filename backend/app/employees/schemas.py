@@ -48,13 +48,3 @@ class EmployeeUpdateSchema(BaseModel):
 # Импорт в конце файла для избежания циклических ссылок
 from app.activities.schemas import ActivitySchema
 EmployeeSchema.model_rebuild()
-
-class ActivityCreateSchema(BaseModel):
-    name: str = Field(..., min_length=1, max_length=50, description="Название активности, от 1 до 50 символов")
-    url: str = Field(..., min_length=1, max_length=200, description="URL активности, от 1 до 200 символов")
-    os: OS = Field(..., description="Операционная система")
-
-class ActivityUpdateSchema(BaseModel):
-    name: Optional[str] = Field(None, min_length=1, max_length=50, description="Название активности, от 1 до 50 символов")
-    url: Optional[str] = Field(None, min_length=1, max_length=200, description="URL активности, от 1 до 200 символов")
-    os: Optional[OS] = Field(None, description="Операционная система")  
