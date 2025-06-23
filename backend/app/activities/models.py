@@ -24,5 +24,8 @@ class Activity(Base):
             "url": self.url,
             "description": self.description,
             "os": self.os,
-            "employees": [employee.to_dict() for employee in self.employees] if self.employees else list()
+            "employees": [
+                {"id": employee.id, "name": employee.name, "surname": employee.surname}
+                for employee in self.employees
+            ] if self.employees else []
         } 
