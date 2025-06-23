@@ -1,0 +1,9 @@
+fastapi[all]
+requests
+pydantic
+asyncio
+croniter
+alembic
+asyncpg
+sqlalchemy
+pydantic-settings
