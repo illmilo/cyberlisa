@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, text, Text, Table, Column
+from sqlalchemy import ForeignKey, text, Text, Table, Column, Time, Float
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.database import Base, str_uniq, int_pk, str_null_true
 from app.activities.models import Activity
@@ -20,6 +20,9 @@ class Employee(Base):
     os: Mapped[str]
     activity_now: Mapped[int] = mapped_column(ForeignKey("activitys.id"), nullable=True)
     activities: Mapped[list["Activity"]] = relationship("Activity", secondary=employee_activity, back_populates="employees")
+    work_start_time = mapped_column(Time, nullable=True)
+    work_end_time = mapped_column(Time, nullable=True)
+    activity_rate = mapped_column(Float, nullable=True)
 
     def __str__(self):
         return (f"{self.__class__.__name__}(id={self.id}, "
@@ -43,6 +46,9 @@ class Employee(Base):
             "online": self.online,
             "os": self.os,
             "activity_now": self.activity_now,
-            "activities": [activity.to_dict() for activity in (self.activities or list())]
+            "activities": [activity.to_dict() for activity in (self.activities or list())],
+            "work_start_time": self.work_start_time.isoformat() if self.work_start_time else None,
+            "work_end_time": self.work_end_time.isoformat() if self.work_end_time else None,
+            "activity_rate": self.activity_rate
         }
 

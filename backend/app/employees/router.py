@@ -38,6 +38,9 @@ async def create_employee(employee_data: EmployeeCreateSchema):
             "role": employee_data.role.value,
             "os": employee_data.os.value,
             "online": employee_data.online,
+            "work_start_time": employee_data.work_start_time,
+            "work_end_time": employee_data.work_end_time,
+            "activity_rate": employee_data.activity_rate,
         }
         
         # Добавляем activity_now только если оно не None и не 0, и активность существует

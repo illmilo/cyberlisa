@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import datetime, date, time
 from typing import Optional, List
 import re
 from pydantic import BaseModel, Field, EmailStr, ConfigDict
@@ -27,6 +27,9 @@ class EmployeeSchema(BaseModel):
     online: bool = Field(..., description="Статус онлайн")
     activity_now: Optional[str] = Field(None, description="Активность")
     activities: Optional[List["ActivitySchema"]] = Field(default_factory=list, description="Активности")
+    work_start_time: Optional[time] = Field(None, description="Время начала работы")
+    work_end_time: Optional[time] = Field(None, description="Время окончания работы")
+    activity_rate: Optional[float] = Field(None, description="Коэффициент активности")
     
 
 class EmployeeCreateSchema(BaseModel):
@@ -36,6 +39,9 @@ class EmployeeCreateSchema(BaseModel):
     os: OS = Field(..., description="Операционная система")
     online: bool = Field(..., description="Статус онлайн")
     activity_now: Optional[int] = Field(None, description="ID активности")
+    work_start_time: Optional[time] = Field(None, description="Время начала работы")
+    work_end_time: Optional[time] = Field(None, description="Время окончания работы")
+    activity_rate: Optional[float] = Field(None, description="Коэффициент активности")
 
 class EmployeeUpdateSchema(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=50, description="Имя сотрудника, от 1 до 50 символов")
@@ -44,6 +50,9 @@ class EmployeeUpdateSchema(BaseModel):
     os: Optional[OS] = Field(None, description="Операционная система")
     online: Optional[bool] = Field(None, description="Статус онлайн")
     activity_now: Optional[int] = Field(None, description="ID активности")
+    work_start_time: Optional[time] = Field(None, description="Время начала работы")
+    work_end_time: Optional[time] = Field(None, description="Время окончания работы")
+    activity_rate: Optional[float] = Field(None, description="Коэффициент активности")
 
 # Импорт в конце файла для избежания циклических ссылок
 from app.activities.schemas import ActivitySchema
