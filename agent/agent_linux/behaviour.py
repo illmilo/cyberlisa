@@ -8,7 +8,7 @@ from agent.agent_linux.handlers import DevHandler, AdminHandler#, UserHandler
 from backend.app.database import async_session_maker
 from backend.app.employees.models import Employee
 
-#надо сделать чтобы конфиг json брался из бд и сюда передавался
+
 
 class Behaviour:
     def __init__ (self, config):
