@@ -25,10 +25,8 @@ class EmployeeDAO(BaseDAO):
             if not employee_info:
                 return None
 
-            # Сериализация до выхода из сессии
             employee_data = employee_info.to_dict()
 
-            # Проверяем, есть ли активность сейчас
             if employee_info.activity_now:
                 query_activity = select(Activity).filter_by(id=employee_info.activity_now)
                 result_activity = await session.execute(query_activity)
@@ -40,7 +38,6 @@ class EmployeeDAO(BaseDAO):
             else:
                 employee_data['activity_now'] = None
 
-            # Безопасная обработка activities
             employee_data['activities'] = [activity.to_dict() for activity in (employee_info.activities or [])]
 
             return employee_data
@@ -49,7 +46,6 @@ class EmployeeDAO(BaseDAO):
     async def assign_activities_to_employee(cls, employee_id: int, activity_ids: list[int]):
         """Назначить активности сотруднику"""
         async with async_session_maker() as session:
-            # Получаем сотрудника с загруженными активностями
             query_employee = select(Employee).options(selectinload(Employee.activities)).filter_by(id=employee_id)
             result_employee = await session.execute(query_employee)
             employee = result_employee.scalar_one_or_none()
@@ -57,12 +53,10 @@ class EmployeeDAO(BaseDAO):
             if not employee:
                 raise ValueError(f"Сотрудник с ID {employee_id} не найден")
             
-            # Получаем активности
             query_activities = select(Activity).filter(Activity.id.in_(activity_ids))
             result_activities = await session.execute(query_activities)
             activities = result_activities.scalars().all()
             
-            # Очищаем существующие активности и добавляем новые
             employee.activities.clear()
             employee.activities.extend(activities)
             
@@ -75,7 +69,6 @@ class EmployeeDAO(BaseDAO):
     async def add_activity_to_employee(cls, employee_id: int, activity_id: int):
         """Добавить одну активность сотруднику"""
         async with async_session_maker() as session:
-            # Получаем сотрудника с загруженными активностями
             query_employee = select(Employee).options(selectinload(Employee.activities)).filter_by(id=employee_id)
             result_employee = await session.execute(query_employee)
             employee = result_employee.scalar_one_or_none()
@@ -83,12 +76,10 @@ class EmployeeDAO(BaseDAO):
             if not employee:
                 raise ValueError(f"Сотрудник с ID {employee_id} не найден")
             
-            # Получаем активность
             activity = await session.get(Activity, activity_id)
             if not activity:
                 raise ValueError(f"Активность с ID {activity_id} не найдена")
             
-            # Проверяем, нет ли уже такой активности
             if activity not in employee.activities:
                 employee.activities.append(activity)
             
@@ -100,7 +91,6 @@ class EmployeeDAO(BaseDAO):
     @classmethod
     async def get_agent_config_from_db(cls, employee_id: int):
         async with async_session_maker() as session:
-            # Получаем сотрудника с активностями
             stmt = (
                 select(cls.model)
                 .options(selectinload(cls.model.activities))
@@ -110,7 +100,6 @@ class EmployeeDAO(BaseDAO):
             employee = result.scalar_one_or_none()
             if not employee:
                 return None
-            # Собираем конфиг
             config = {
                 "employee_id": employee.id,
                 "role": employee.role,

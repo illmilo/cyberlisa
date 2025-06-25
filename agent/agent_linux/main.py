@@ -11,8 +11,6 @@ from backend.app.database import async_session_maker
 from backend.app.dao.base import BaseDAO
 
 
-#s govnyashkoi
-
 running_agents = {}
 
 async def agent_worker(employee_id):
@@ -40,13 +38,11 @@ async def handle_notify(payload):
             del running_agents[emp_id]
     elif op in ('INSERT', 'UPDATE'):
         if os_val != 'linux':
-            # Если сотрудник сменил ОС — останавливаем агента
             if emp_id in running_agents:
                 print(f"Остановка агента (смена ОС) {emp_id}")
                 running_agents[emp_id].cancel()
                 del running_agents[emp_id]
             return
-        # Если сотрудник новый или изменился — перезапускаем агента
         if emp_id in running_agents:
             print(f"Перезапуск агента для сотрудника {emp_id}")
             running_agents[emp_id].cancel()
@@ -59,10 +55,9 @@ async def listen_notifications():
     await conn.add_listener('employees_channel', on_notify)
     print("Слушаю события employees_channel...")
     while True:
-        await asyncio.sleep(3600)  # держим соединение открытым``
+        await asyncio.sleep(3600)
 
 async def main():
-    # При старте — запустить агентов для всех linux-сотрудников
     from backend.app.database import async_session_maker
     async with async_session_maker() as session:
         employees = await session.execute(
@@ -74,7 +69,6 @@ async def main():
             print(f"Запуск агента для сотрудника {emp_id}")
             task = asyncio.create_task(agent_worker(emp_id))
             running_agents[emp_id] = task
-    # Запускаем слушатель событий
     await listen_notifications()
 
 if __name__ == "__main__":

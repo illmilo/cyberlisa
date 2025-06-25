@@ -1,9 +1,8 @@
 from sqlalchemy import ForeignKey, text, Text, Table, Column, Time, Float
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from backend.app.database import Base, str_uniq, int_pk, str_null_true
-from backend.app.activities.models import Activity
+from app.database import Base, str_uniq, int_pk, str_null_true
+from app.activities.models import Activity
 
-# Промежуточная таблица для связи many-to-many
 employee_activity = Table(
     'employee_activity',
     Base.metadata,

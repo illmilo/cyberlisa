@@ -8,7 +8,7 @@ from backend.app.employees.rb import RBEmp
 from backend.app.employees.schemas import EmployeeSchema, EmployeeCreateSchema, EmployeeUpdateSchema
 from typing import List
 
-router_employees = APIRouter(prefix = '/employees', tags = ['Работа со студентами'])
+router_employees = APIRouter(prefix = '/employees', tags = ['Работа с сотрудниками'])
 
 @router_employees.get("/", summary = 'Получить всех сотрудников')
 async def get_all_employees(request_body: RBEmp = Depends()):
@@ -31,7 +31,6 @@ async def get_employee_by_filter(request_body: RBEmp = Depends()) -> EmployeeSch
 @router_employees.post("/", summary = 'Создать нового сотрудника')
 async def create_employee(employee_data: EmployeeCreateSchema):
     async with async_session_maker() as session:
-        # Создаем словарь с данными, исключая None значения
         employee_dict = {
             "name": employee_data.name,
             "surname": employee_data.surname,
@@ -42,10 +41,7 @@ async def create_employee(employee_data: EmployeeCreateSchema):
             "work_end_time": employee_data.work_end_time,
             "activity_rate": employee_data.activity_rate,
         }
-        
-        # Добавляем activity_now только если оно не None и не 0, и активность существует
         if employee_data.activity_now is not None and employee_data.activity_now > 0:
-            # Проверяем, существует ли активность
             activity = await session.get(Activity, employee_data.activity_now)
             if activity:
                 employee_dict["activity_now"] = employee_data.activity_now
@@ -70,21 +66,17 @@ async def update_employee(employee_id: int, employee_data: EmployeeUpdateSchema)
         
         update_data = employee_data.model_dump(exclude_unset=True)
         
-        # Обрабатываем enum значения
         if 'role' in update_data:
             update_data['role'] = update_data['role'].value
         if 'os' in update_data:
             update_data['os'] = update_data['os'].value
         
-        # Обрабатываем activity_now отдельно
         if 'activity_now' in update_data:
             activity_now_value = update_data.pop('activity_now')
             
-            # Если activity_now равно 0 или None, устанавливаем None (убираем текущую активность)
             if activity_now_value is None or activity_now_value == 0:
                 employee.activity_now = None
             else:
-                # Проверяем, существует ли активность
                 activity = await session.get(Activity, activity_now_value)
                 if activity:
                     employee.activity_now = activity_now_value
@@ -94,7 +86,6 @@ async def update_employee(employee_id: int, employee_data: EmployeeUpdateSchema)
                         detail=f"Активность с ID {activity_now_value} не найдена"
                     )
             
-        # Обновляем остальные поля
         for field, value in update_data.items():
             setattr(employee, field, value)
         
