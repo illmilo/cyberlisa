@@ -10,6 +10,9 @@ from backend.app.activities.models import Activity
 from backend.app.database import async_session_maker
 from backend.app.dao.base import BaseDAO
 
+
+#s govnyashkoi
+
 running_agents = {}
 
 async def agent_worker(employee_id):
