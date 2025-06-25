@@ -1,8 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
-from app.activities.models import Activity
-from app.database import async_session_maker
-from app.dao.base import BaseDAO
+from backend.app.activities.models import Activity
+from backend.app.database import async_session_maker
+from backend.app.dao.base import BaseDAO
 
 
 class ActivityDAO(BaseDAO):

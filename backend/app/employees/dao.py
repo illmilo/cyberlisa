@@ -1,9 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload, selectinload
-from app.employees.models import Employee
-from app.activities.models import Activity
-from app.database import async_session_maker
-from app.dao.base import BaseDAO
+from backend.app.employees.models import Employee
+from backend.app.activities.models import Activity
+from backend.app.database import async_session_maker
+from backend.app.dao.base import BaseDAO
 
 
 class EmployeeDAO(BaseDAO):
@@ -96,3 +96,30 @@ class EmployeeDAO(BaseDAO):
             await session.refresh(employee)
             
             return employee
+
+    @classmethod
+    async def get_agent_config_from_db(cls, employee_id: int):
+        async with async_session_maker() as session:
+            # Получаем сотрудника с активностями
+            stmt = (
+                select(cls.model)
+                .options(selectinload(cls.model.activities))
+                .filter_by(id=employee_id)
+            )
+            result = await session.execute(stmt)
+            employee = result.scalar_one_or_none()
+            if not employee:
+                return None
+            # Собираем конфиг
+            config = {
+                "employee_id": employee.id,
+                "role": employee.role,
+                "work_start_time": employee.work_start_time.isoformat() if employee.work_start_time else None,
+                "work_end_time": employee.work_end_time.isoformat() if employee.work_end_time else None,
+                "activity_rate": employee.activity_rate,
+                "actions": [
+                    {"id": act.id, "name": act.name, "url": act.url, "description": act.description, "os": act.os}
+                    for act in (employee.activities or [])
+                ]
+            }
+            return config

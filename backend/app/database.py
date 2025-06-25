@@ -5,7 +5,7 @@ from sqlalchemy import func, Integer
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, declared_attr, Mapped, mapped_column
 
-from app.config import get_db_url
+from backend.app.config import get_db_url
 
 DATABASE_URL = get_db_url()
 

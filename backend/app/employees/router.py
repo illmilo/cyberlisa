@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.employees.models import Employee
-from app.activities.models import Activity
-from app.database import async_session_maker
+from backend.app.employees.models import Employee
+from backend.app.activities.models import Activity
+from backend.app.database import async_session_maker
 from sqlalchemy import select
-from app.employees.dao import EmployeeDAO
-from app.employees.rb import RBEmp
-from app.employees.schemas import EmployeeSchema, EmployeeCreateSchema, EmployeeUpdateSchema
+from backend.app.employees.dao import EmployeeDAO
+from backend.app.employees.rb import RBEmp
+from backend.app.employees.schemas import EmployeeSchema, EmployeeCreateSchema, EmployeeUpdateSchema
 from typing import List
 
 router_employees = APIRouter(prefix = '/employees', tags = ['Работа со студентами'])

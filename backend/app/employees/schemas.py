@@ -54,6 +54,5 @@ class EmployeeUpdateSchema(BaseModel):
     work_end_time: Optional[time] = Field(None, description="Время окончания работы")
     activity_rate: Optional[float] = Field(None, description="Коэффициент активности")
 
-# Импорт в конце файла для избежания циклических ссылок
-from app.activities.schemas import ActivitySchema
+from backend.app.activities.schemas import ActivitySchema
 EmployeeSchema.model_rebuild()

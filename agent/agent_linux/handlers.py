@@ -4,34 +4,36 @@ import aiohttp
 import asyncio
 
 class DevHandler:
-    async def work(self, params):
+    async def work(self):
         actions = [
-            lambda : subprocess.run("git add .", shell=True),
-            lambda : subprocess.run("git commit -m 'commit'", shell=True),
-            lambda : subprocess.run("git push", shell=True),
-            lambda : subprocess.run(["python", random.choice(params["scripts"])])
+            {"name": "git add", "run": lambda: subprocess.run("git add .", shell=True)},
+            {"name": "git commit", "run": lambda: subprocess.run("git commit -m 'commit'", shell=True)},
+            {"name": "git push", "run": lambda: subprocess.run("git push", shell=True)},
+          #  lambda : subprocess.run(["python", random.choice(params["scripts"])])
         ]
-        action = random.choice(actions)
-        subprocess.run(action, shell=True)
-    async def web_surf(self, params):
-        async with aiohttp.ClientSession() as session:
-            for url in random.sample(params["urls"], 3):
-                await session.get(url)
-                await asyncio.sleep(random.uniform(1, 3))
+        return random.choice(actions)
+    # async def web_surf(self, params):
+    #     async with aiohttp.ClientSession() as session:
+    #         for url in random.sample(params["urls"], 3):
+    #             await session.get(url)
+    #             await asyncio.sleep(random.uniform(1, 3))
 
 class AdminHandler:
-    async def work(self,params):
-        commands = [
-            ["df", "-h"],
-            ["free", "-h"],
-            ["top", "-bn1"],
-            ["systemctl", "status", random.choice(params["services"])]
+    async def work(self):
+        actions = [
+            {"name": "df -h", "run": lambda: subprocess.run(["df", "-h"])},
+            {"name": "free -h", "run": lambda: subprocess.run(["free", "-h"])},
+            {"name": "top -bn1", "run": lambda: subprocess.run(["top", "-bn1"])},
+            #["systemctl", "status", random.choice(params["services"])]
         ]
-        subprocess.run(random.choice(commands), shell=True)
+        return random.choice(actions)
 
-class UserHandler:
-    async def work(self, params):
-        docs = random.sample(params["docs"], 2)
-        subprocess.run("libreoffice", "--writer", docs[0])
-        subprocess.run("libreoffice", "--calc", docs[1])
+# class UserHandler:
+#     async def work(self, params):
+#         docs = random.sample(params["docs"], 2)
+#         actions = [
+#             {"name": "writer", "run": lambda: subprocess.run(["libreoffice", "--writer", docs[0]])},
+#             {"name": "calc", "run": lambda: subprocess.run(["libreoffice", "--calc", docs[1]])}
+#         ]
+#         return random.choice(actions)
         

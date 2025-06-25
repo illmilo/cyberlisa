@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.activities.models import Activity
-from app.activities.dao import ActivityDAO
-from app.activities.schemas import ActivitySchema, ActivityCreateSchema, ActivityUpdateSchema
-from app.database import async_session_maker
+from backend.app.activities.models import Activity
+from backend.app.activities.dao import ActivityDAO
+from backend.app.activities.schemas import ActivitySchema, ActivityCreateSchema, ActivityUpdateSchema
+from backend.app.database import async_session_maker
 from sqlalchemy import select
 
 router_activities = APIRouter(prefix='/activities', tags=['Работа с активностями'])

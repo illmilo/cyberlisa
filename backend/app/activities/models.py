@@ -1,5 +1,8 @@
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from app.database import Base, str_uniq, int_pk, str_null_true
+from backend.app.database import Base, str_uniq, int_pk, str_null_true
+from sqlalchemy import select
+from backend.app.database import async_session_maker
+import asyncio
 
 class Activity(Base):
     __tablename__ = "activitys"
@@ -28,4 +31,24 @@ class Activity(Base):
                 {"id": employee.id, "name": employee.name, "surname": employee.surname}
                 for employee in self.employees
             ] if self.employees else []
-        } 
+        }
+
+    def get_actions_with_probabilities(self, employee_id=None):
+        # Возвращает список dict: [{'id': ..., 'name': ..., 'probability': ...}, ...]
+        # Если employee_id не указан, возвращает все активности без вероятности
+        async def fetch():
+            async with async_session_maker() as session:
+                if employee_id is not None:
+                    result = await session.execute(
+                        select(Activity, employee_activity.c.probability)
+                        .join(employee_activity, Activity.id == employee_activity.c.activity_id)
+                        .where(employee_activity.c.employee_id == employee_id)
+                    )
+                    return [
+                        {**activity.to_dict(), 'probability': probability}
+                        for activity, probability in result.all()
+                    ]
+                else:
+                    result = await session.execute(select(Activity))
+                    return [activity.to_dict() for activity in result.scalars().all()]
+        return asyncio.run(fetch()) 
