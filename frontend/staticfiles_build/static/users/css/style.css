@@ -186,7 +186,8 @@ select[multiple] {
   display: inline-block;
 }
 
-.dropdown-check-list .anchor {
+.dropdown-check-list .anchor,
+#roles {
   position: relative;
   cursor: pointer;
   display: inline-block;
@@ -196,17 +197,12 @@ select[multiple] {
 .dropdown-check-list .anchor:after {
   position: absolute;
   content: "";
-  border-left: 2px solid black;
-  border-top: 2px solid black;
+  border-left: 2px solid #757575;
+  border-top: 2px solid #757575;
   padding: 5px;
   right: 10px;
   top: 10%;
   transform: rotate(-135deg);
-}
-
-.dropdown-check-list .anchor:active:after {
-  right: 8px;
-  top: 21%;
 }
 
 .dropdown-check-list ul.items {
@@ -243,9 +239,13 @@ select[multiple] {
 /* New class for rotated state */
 .dropdown-check-list.visible .anchor:after {
   transform: rotate(45deg); /* Rotated position */
-  top: 40%; /* Adjust vertical positioning */
+  top: 10%; /* Adjust vertical positioning */
 }
 
 span.anchor {
+    color:#757575;
+}
+
+select#role {
     color:#757575;
 }

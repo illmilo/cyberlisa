@@ -24,7 +24,7 @@
                 <img src="{% static 'dashboard/images/users.png' %}">
                 <div class="stat-desc">
                     <h2>Users</h2>
-                    <span class="stat-value">Total Users: 1,234</span>
+                    <span class="stat-value">Total Users: {{ users|length }}</span>
                 </div>
             </a>
             
@@ -32,15 +32,7 @@
                 <img src="{% static 'dashboard/images/servers.png' %}">
                 <div class="stat-desc">
                     <h2>Servers</h2>
-                    <span class="stat-value">Active Servers: 45</span>
-                </div>
-            </a>
-            
-            <a href="{% url 'activity' %}" class="stat-card" id="purple">
-                <img src="{% static 'dashboard/images/activity.png' %}">
-                <div class="stat-desc">
-                    <h2>Activity Pools</h2>
-                    <span class="stat-value">Ongoing Activities: 7</span>
+                    <span class="stat-value">Active Servers: {{ servers|length }}</span>
                 </div>
             </a>
         </div>

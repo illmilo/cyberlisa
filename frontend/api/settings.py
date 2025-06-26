@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'dashboard',
     'users',
     'servers',
-    'activity',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -89,17 +89,17 @@ load_dotenv()
 
 # Database configuration
 DATABASES = {
-'default': {
-    'ENGINE': 'django.db.backends.postgresql',
-    'NAME': getenv('PGDATABASE'),
-    'USER': getenv('PGUSER'),
-    'PASSWORD': getenv('PGPASSWORD'),
-    'HOST': getenv('PGHOST'),
-    'PORT': getenv('PGPORT', 5432),
-        'OPTIONS': {
-            'sslmode': 'require',
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': getenv('PGDATABASE'),
+        'USER': getenv('PGUSER'),
+        'PASSWORD': getenv('PGPASSWORD'),
+        'HOST': getenv('PGHOST'),
+        'PORT': getenv('PGPORT', 5432),
+            'OPTIONS': {
+                'sslmode': 'require',
+        }
     }
-}
 }
 
 # DATABASES = {
@@ -156,3 +156,5 @@ else:
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'users.User'
