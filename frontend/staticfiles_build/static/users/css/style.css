@@ -23,7 +23,7 @@
 
 /* Left column styles */
 .sidebar {
-    flex: 0 0 300px;
+    flex: 0 0 max-content;
     background: linear-gradient(135deg, #4a6fa5, #2c3e50);
     color: white;
     padding: 25px;

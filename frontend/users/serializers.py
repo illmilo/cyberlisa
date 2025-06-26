@@ -1,7 +1,9 @@
+from django.contrib.auth.hashers import make_password
+
 from rest_framework import serializers
-from .models import User, Role, Action
+from .models import User, Action #, Role
 from servers.models import Server
-from servers.serializers import ServerSerializer
+# from servers.serializers import ServerSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -16,13 +18,6 @@ class UserSerializer(serializers.ModelSerializer):
         required=True
     )
 
-    # debugging
-    server_details = ServerSerializer(
-        source='servers', 
-        many=True, 
-        read_only=True
-    )
-
     class Meta:
         model = User
         fields = '__all__'
@@ -30,18 +25,16 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True, 'required': False}
         }
-    
-    def create(self, validated_data):
-        actions = validated_data.pop('actions')
-        servers = validated_data.pop('servers')
 
-        user = User.objects.create(
-            username=validated_data['username'],
-            password='defaultpassword',  # Set a default password
-            **validated_data
-        )
+    def create(self, validated_data):
+        actions = validated_data.pop('actions', [])
+        servers = validated_data.pop('servers', [])
+
+        validated_data['password'] = make_password('defaultpassword')
+
+        user = User.objects.create(**validated_data)
 
         user.actions.set(actions)
         user.servers.set(servers)
-        
+
         return user
