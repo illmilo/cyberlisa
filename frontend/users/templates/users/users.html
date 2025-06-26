@@ -1,0 +1,92 @@
+{% extends 'dashboard/dashboard.html' %}
+{% block title %}Users{% endblock %}
+{% block header %}Users{% endblock %}
+{% load static %}
+{% block style %}
+<link rel="stylesheet" href="{% static 'users/css/style.css' %}" type="text/css">
+{% endblock %}
+{% block content %}
+</head>
+<body>
+    <div class="flextable">
+        <!-- Left Column -->
+        <div class="sidebar">
+            <div class="search-box">
+                <input type="text" placeholder="Search...">
+            </div>
+            
+            <div class="list">
+                <h2>{% block list-header %}User List{% endblock %}</h2>
+                {% block list-content %}
+                    {% for user in users %}
+                        <div class="list-item">{{ user.username }} 
+                            {{ user.role }} 
+                            {% for action in user.actions.all %}{{ action.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                            {% for server in user.servers.all %}{{ server.address }}:{{ server.port }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                        </div>
+                    {% endfor %}
+                {% endblock %}
+            </div>
+        </div>
+        
+        <!-- Right Column -->
+        <div class="main-content">
+            <h1>{% block main-content-header %}Create User{% endblock %}</h1>
+            
+            <form class="create-form" id="{% block form-id %}create-user-form{% endblock %}">
+                {% csrf_token %}
+                {% block form-groups %}
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" placeholder="Enter username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="role">Roles</label>
+                        <select id="role" name="role" required>
+                            <option value="">Select role</option>
+                            {% for role in roles %}
+                                <option value="{{ role.id }}">{{ role.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="actions">Actions</label>
+                        <div class="dropdown-check-list" id="actions-container" onclick="toggleCheckList(this);">
+                            <span class="anchor">Select actions</span>
+                            <ul class="items">
+                                {% for action in actions %}
+                                    <li>
+                                        <input type="checkbox" name="actions" value="{{ action.id }}">
+                                        {{ action.name }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="servers">Servers</label>
+                        <div class="dropdown-check-list" id="servers-container" onclick="toggleCheckList(this);">
+                            <span class="anchor">Select servers</span>
+                            <ul class="items">
+                                {% for server in servers %}
+                                    <li>
+                                        <input type="checkbox" name="servers" value="{{ server.id }}">
+                                        {{ server.address }}:{{ server.port }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endblock %}
+                <button type="submit" class="submit-btn">{% block submit-btn %}Create User{% endblock %}</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="{% static 'users/js/toggle.js' %}"></script>
+    <script src="{% static 'users/js/formHandler.js' %}"></script>
+{% endblock %}

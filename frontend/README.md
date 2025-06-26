@@ -1,22 +1,6 @@
 <img src="logo.png" width="35px" align="right">
 
-# LISA
-
-## Usage
-To run database: 
-```
-docker-compose up -d
-```
-in terminal 
-
-## Account Details
-POSTGRES_USER: lisoon
-
-POSTGRES_PASSWORD: 12345
-
-POSTGRES_DB: fast_api
-
-ports: "5433:5432"
+# CYBERLISA
 
 ## Demo
 
