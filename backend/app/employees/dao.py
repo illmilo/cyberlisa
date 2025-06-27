@@ -1,9 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload, selectinload
-from backend.app.employees.models import Employee
-from backend.app.activities.models import Activity
-from backend.app.database import async_session_maker
-from backend.app.dao.base import BaseDAO
+from app.employees.models import Employee
+from app.activities.models import Activity
+from app.database import async_session_maker
+from app.dao.base import BaseDAO
 
 
 class EmployeeDAO(BaseDAO):

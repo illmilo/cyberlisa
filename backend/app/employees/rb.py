@@ -1,4 +1,4 @@
-from backend.app.employees.schemas import EmployeeSchema
+from app.employees.schemas import EmployeeSchema
 
 
 class RBEmp:

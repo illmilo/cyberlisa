@@ -1,18 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import os
-from backend.app.employees.router import router_employees
-from backend.app.activities.router import router_activities
+from app.employees.router import router_employees
+from app.activities.router import router_activities
+from app.servers.router import router_servers
 
-# Импорты моделей для правильной настройки SQLAlchemy relationship
-from backend.app.employees.models import Employee
-from backend.app.activities.models import Activity
 
-path_to_json = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'employees.json')
+from app.employees.models import Employee
+from app.activities.models import Activity
+from app.servers.models import Server
+
 
 app = FastAPI()
 
-# Add CORS middleware
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -23,7 +23,8 @@ app.add_middleware(
 
 @app.get("/")
 def root():
-    return {"message": "MM"}
+    return {"message": "LISA"}
 
 app.include_router(router_employees)
 app.include_router(router_activities)
+app.include_router(router_servers)

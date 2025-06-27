@@ -1,6 +1,6 @@
 from sqlalchemy.future import select
-from backend.app.database import async_session_maker
-from backend.app.employees.models import Employee
+from app.database import async_session_maker
+from app.employees.models import Employee
 
 
 class BaseDAO:

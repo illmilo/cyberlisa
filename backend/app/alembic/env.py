@@ -12,9 +12,11 @@ from os.path import dirname, abspath
 
 sys.path.insert(0, dirname(dirname(abspath(__file__))))
 
-from backend.app.database import DATABASE_URL, Base
-from backend.app.employees.models import Employee
-from backend.app.activities.models import Activity
+from app.database import DATABASE_URL, Base
+from app.employees.models import Employee
+from app.activities.models import Activity
+from app.servers.models import Server
+
 
 
 

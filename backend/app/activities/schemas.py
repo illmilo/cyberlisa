@@ -15,7 +15,7 @@ class ActivitySchema(BaseModel):
     url: str = Field(..., min_length=1, max_length=200, description="URL активности, от 1 до 200 символов")
     description: str = Field(..., description="Описание активности")
     os: OS = Field(..., description="Операционная система")
-    employees: List["EmployeeSchema"] = Field(default_factory=list, description="Сотрудники, которые выполняют активность")
+    employees: List["EmployeeSchema"] = Field(default_factory=list, description="Агенты, которым назначена активность")
 
 
 class ActivityCreateSchema(BaseModel):
@@ -31,6 +31,5 @@ class ActivityUpdateSchema(BaseModel):
     description: Optional[str] = Field(None, description="Описание активности")
     os: Optional[OS] = Field(None, description="Операционная система")
 
-# Импорт в конце файла для избежания циклических ссылок
 from app.employees.schemas import EmployeeSchema
 ActivitySchema.model_rebuild()
