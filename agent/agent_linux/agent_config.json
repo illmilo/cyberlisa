@@ -1,0 +1,16 @@
+{
+  "employee_id": 1,
+  "role": "admin",
+  "work_start_time": "09:00:00",
+  "work_end_time": "21:00:00",
+  "activity_rate": 0.8,
+  "actions": [
+    {
+      "id": 1,
+      "name": "firefox",
+      "url": "firefox.com",
+      "description": "Default description",
+      "os": "linux"
+    }
+  ]
+}

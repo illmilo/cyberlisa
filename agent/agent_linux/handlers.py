@@ -1,39 +1,88 @@
 import subprocess
 import random
-import aiohttp
-import asyncio
+import time
+
+def safe_run(cmd, shell=False):
+    try:
+        subprocess.run(cmd, shell=shell, check=True)
+    except Exception as e:
+        print(f"[ERROR] Ошибка при выполнении команды {cmd}: {e}")
 
 class DevHandler:
-    async def work(self):
-        actions = [
-            {"name": "git add", "run": lambda: subprocess.run("git add .", shell=True)},
-            {"name": "git commit", "run": lambda: subprocess.run("git commit -m 'commit'", shell=True)},
-            {"name": "git push", "run": lambda: subprocess.run("git push", shell=True)},
-          #  lambda : subprocess.run(["python", random.choice(params["scripts"])])
-        ]
-        return random.choice(actions)
-    # async def web_surf(self, params):
-    #     async with aiohttp.ClientSession() as session:
-    #         for url in random.sample(params["urls"], 3):
-    #             await session.get(url)
-    #             await asyncio.sleep(random.uniform(1, 3))
+    def work(self, params):
+        actions = params.get("actions", [])
+        if not actions:
+            print("[LOG] Нет действий в конфиге")
+            return {"name": "no_action", "run": lambda: print("Нет действия")}
+        action = random.choice(actions)
+        return self._action_to_callable(action)
+
+    def _action_to_callable(self, action):
+        if "url" in action and action["url"]:
+            url = action["url"]
+            if not url.startswith("http://") and not url.startswith("https://"):
+                url = "https://" + url
+            return {
+                "name": f"open {url}",
+                "run": lambda: safe_run(["xdg-open", url])
+            }
+        elif "name" in action and action["name"]:
+            return {
+                "name": action["name"],
+                "run": lambda: safe_run([action["name"]])
+            }
+        else:
+            return {"name": "unknown", "run": lambda: print("Неизвестное действие")}
 
 class AdminHandler:
-    async def work(self):
-        actions = [
-            {"name": "df -h", "run": lambda: subprocess.run(["df", "-h"])},
-            {"name": "free -h", "run": lambda: subprocess.run(["free", "-h"])},
-            {"name": "top -bn1", "run": lambda: subprocess.run(["top", "-bn1"])},
-            #["systemctl", "status", random.choice(params["services"])]
-        ]
-        return random.choice(actions)
+    def work(self, params):
+        actions = params.get("actions", [])
+        if not actions:
+            print("[LOG] Нет действий в конфиге")
+            return {"name": "no_action", "run": lambda: print("Нет действия")}
+        action = random.choice(actions)
+        return self._action_to_callable(action)
 
-# class UserHandler:
-#     async def work(self, params):
-#         docs = random.sample(params["docs"], 2)
-#         actions = [
-#             {"name": "writer", "run": lambda: subprocess.run(["libreoffice", "--writer", docs[0]])},
-#             {"name": "calc", "run": lambda: subprocess.run(["libreoffice", "--calc", docs[1]])}
-#         ]
-#         return random.choice(actions)
+    def _action_to_callable(self, action):
+        if "url" in action and action["url"]:
+            url = action["url"]
+            if not url.startswith("http://") and not url.startswith("https://"):
+                url = "https://" + url
+            return {
+                "name": f"open {url}",
+                "run": lambda: safe_run(["xdg-open", url])
+            }
+        elif "name" in action and action["name"]:
+            return {
+                "name": action["name"],
+                "run": lambda: safe_run([action["name"]])
+            }
+        else:
+            return {"name": "unknown", "run": lambda: print("Неизвестное действие")}
+
+class UserHandler:
+    def work(self, params):
+        actions = params.get("actions", [])
+        if not actions:
+            print("[LOG] Нет действий в конфиге")
+            return {"name": "no_action", "run": lambda: print("Нет действия")}
+        action = random.choice(actions)
+        return self._action_to_callable(action)
+
+    def _action_to_callable(self, action):
+        if "url" in action and action["url"]:
+            url = action["url"]
+            if not url.startswith("http://") and not url.startswith("https://"):
+                url = "https://" + url
+            return {
+                "name": f"open {url}",
+                "run": lambda: safe_run(["xdg-open", url])
+            }
+        elif "name" in action and action["name"]:
+            return {
+                "name": action["name"],
+                "run": lambda: safe_run([action["name"]])
+            }
+        else:
+            return {"name": "unknown", "run": lambda: print("Неизвестное действие")}
         

@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import joinedload, selectinload
 from app.employees.models import Employee
 from app.activities.models import Activity
@@ -112,3 +112,12 @@ class EmployeeDAO(BaseDAO):
                 ]
             }
             return config
+    @classmethod
+    async def set_online_status(cls, employee_id: int, online: bool):
+        async with async_session_maker() as session:
+            stmt = update(cls.model).where(cls.model.id == employee_id).values(online=online)
+            await session.execute(stmt)
+            await session.commit()
+            return {"status": "updated"}
+        
+        

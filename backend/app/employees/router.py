@@ -7,8 +7,11 @@ from app.employees.dao import EmployeeDAO
 from app.employees.rb import RBEmp
 from app.employees.schemas import EmployeeSchema, EmployeeCreateSchema, EmployeeUpdateSchema
 from typing import List
+import json 
+import os
+import shutil
 
-router_employees = APIRouter(prefix = '/employees', tags = ['Работа с агентами'])
+router_employees = APIRouter(prefix = '/agents', tags = ['Работа с агентами'])
 
 @router_employees.get("/", summary = 'Получить всех агентов')
 async def get_all_employees(request_body: RBEmp = Depends()):
@@ -119,6 +122,38 @@ async def add_activity_to_employee(employee_id: int, activity_id: int):
         return {"message": f"Активность {activity_id} добавлена агенту {employee_id}", "employee": employee}
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+    
+
+@router_employees.post("/{employee_id}/start_agent", summary="запустить linux-агента")
+async def start_agent(employee_id: int):
+    await EmployeeDAO.set_online_status(employee_id, True)
+    config = await EmployeeDAO.get_agent_config_from_db(employee_id)
+    if not config:
+        raise HTTPException(status_code=404, detail="Агент не найден")
+
+    base_dir = "/home/lisoon/Documents/23/created_agents" 
+    template_dir = "/home/lisoon/Documents/23/LISA/agent/agent_linux"
+    agent_dir = os.path.join(base_dir, f"agent_linux_{employee_id}")
+
+    if os.path.exists(agent_dir):
+        shutil.rmtree(agent_dir)
+    shutil.copytree(template_dir, agent_dir)
+
+    config_path = os.path.join(agent_dir, "agent_config.json")
+    with open(config_path, "w") as f:
+        json.dump(config, f, indent=2)
+
+    return {"status": "ok", "agent_dir": agent_dir, "config_path": config_path}
+
+    #дальше докер деплоит агента на сервер
+
+
+@router_employees.post("/{employee_id}/stop_agent", summary="остановить linux-агента")
+async def stop_agent(employee_id: int):
+    await EmployeeDAO.set_online_status(employee_id, False)
+   #дальше докер останавливает агента 
+
+
 
 
 
