@@ -28,20 +28,12 @@ class Behaviour:
         else:
             raise ValueError(f"Unknown role: {self.config['role']}")
 
-    def set_online(self, online: bool = True):
-        print(f"[LOG] Агент {'онлайн' if online else 'оффлайн'}")
-
-    def set_activity_now(self, activity_id: int):
-        print(f"[LOG] Текущая активность: {activity_id}")
 
     def run_loop(self, action_func=None):
         while True:
             if self.isActive():
-                self.set_online(True)
                 if random.random() < min(self.activity_rate, 1.0):
                     action = self.get_next_action()
-                    print(f"Выполняется действие: {action['name']}")
-                    self.set_activity_now(action["name"])
                     if action_func:
                         action_func(action)
                     action_duration = random.uniform(1, 3) / max(self.activity_rate, 0.1)
@@ -50,6 +42,5 @@ class Behaviour:
                 pause = random.uniform(1, 5) / max(self.activity_rate, 0.1)
                 time.sleep(pause)
             else:
-                self.set_online(False)
                 time.sleep(60)
     
