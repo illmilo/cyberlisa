@@ -36,7 +36,6 @@ async def create_employee(employee_data: EmployeeCreateSchema):
     async with async_session_maker() as session:
         employee_dict = {
             "name": employee_data.name,
-            "surname": employee_data.surname,
             "role": employee_data.role.value,
             "os": employee_data.os.value,
             "online": employee_data.online,

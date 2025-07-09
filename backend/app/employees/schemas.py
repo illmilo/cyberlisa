@@ -21,7 +21,6 @@ class EmployeeSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     name: str = Field(..., min_length=1, max_length=50, description="Имя агента, от 1 до 50 символов")
-    surname: str = Field(..., min_length=1, max_length=50, description="Фамилия агента, от 1 до 50 символов")
     role: Role = Field(..., description="Роль агента")
     os: OS = Field(..., description="Операционная система агента")
     online: bool = Field(..., description="Статус онлайн")
@@ -37,7 +36,6 @@ class EmployeeSchemaWnoActivities(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     name: str = Field(..., min_length=1, max_length=50, description="Имя агента, от 1 до 50 символов")
-    surname: str = Field(..., min_length=1, max_length=50, description="Фамилия агента, от 1 до 50 символов")
     role: Role = Field(..., description="Роль агента")
     os: OS = Field(..., description="Операционная система агента")
     online: bool = Field(..., description="Статус онлайн")
@@ -49,7 +47,6 @@ class EmployeeSchemaWnoActivities(BaseModel):
 
 class EmployeeCreateSchema(BaseModel):
     name: str = Field(..., min_length=1, max_length=50, description="Имя агента, от 1 до 50 символов")
-    surname: str = Field(..., min_length=1, max_length=50, description="Фамилия агента, от 1 до 50 символов")
     role: Role = Field(..., description="Роль агента")
     os: OS = Field(..., description="Операционная система агента")
     online: bool = Field(..., description="Статус онлайн")
@@ -61,7 +58,6 @@ class EmployeeCreateSchema(BaseModel):
 
 class EmployeeUpdateSchema(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=50, description="Имя агента, от 1 до 50 символов")
-    surname: Optional[str] = Field(None, min_length=1, max_length=50, description="Фамилия агента, от 1 до 50 символов")
     role: Optional[Role] = Field(None, description="Роль агента")
     os: Optional[OS] = Field(None, description="Операционная система агента")
     online: Optional[bool] = Field(None, description="Статус онлайн")

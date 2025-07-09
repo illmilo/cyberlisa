@@ -9,7 +9,7 @@ class Activity(Base):
     
     id: Mapped[int_pk]
     name: Mapped[str]
-    url: Mapped[str]
+    url: Mapped[str_null_true]
     description: Mapped[str]
     os: Mapped[str]
     employees: Mapped[list["Employee"]] = relationship("Employee", secondary="employee_activity", back_populates="activities")
@@ -28,7 +28,7 @@ class Activity(Base):
             "description": self.description,
             "os": self.os,
             "employees": [
-                {"id": employee.id, "name": employee.name, "surname": employee.surname}
+                {"id": employee.id, "name": employee.name}
                 for employee in self.employees
             ] if self.employees else []
         }

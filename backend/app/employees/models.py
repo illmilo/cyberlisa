@@ -14,7 +14,6 @@ employee_activity = Table(
 class Employee(Base):
     id: Mapped[int_pk]
     name: Mapped[str]
-    surname: Mapped[str]
     role: Mapped[str]
     online: Mapped[bool]
     os: Mapped[str]
@@ -29,7 +28,6 @@ class Employee(Base):
     def __str__(self):
         return (f"{self.__class__.__name__}(id={self.id}, "
                 f"name={self.name!r},"
-                f"surname={self.surname!r},"
                 f"role={self.role!r},"
                 f"online={self.online!r},"
                 f"os={self.os!r},"
@@ -44,7 +42,6 @@ class Employee(Base):
         return {
             "id": self.id,
             "name": self.name,
-            "surname": self.surname,
             "role": self.role,
             "online": self.online,
             "os": self.os,
@@ -55,4 +52,6 @@ class Employee(Base):
             "activity_rate": self.activity_rate,
             "server_id": self.server_id
         }
+
+# Важно: после удаления поля surname требуется миграция Alembic для удаления столбца из БД
 

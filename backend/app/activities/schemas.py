@@ -12,7 +12,7 @@ class ActivitySchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     name: str = Field(..., min_length=1, max_length=50, description="Название активности, от 1 до 50 символов")
-    url: str = Field(..., min_length=1, max_length=200, description="URL активности, от 1 до 200 символов")
+    url: Optional[str] = Field(None, min_length=1, max_length=200, description="URL активности, от 1 до 200 символов")
     description: str = Field(..., description="Описание активности")
     os: OS = Field(..., description="Операционная система")
     employees: List["EmployeeSchema"] = Field(default_factory=list, description="Агенты, которым назначена активность")
@@ -20,7 +20,7 @@ class ActivitySchema(BaseModel):
 
 class ActivityCreateSchema(BaseModel):
     name: str = Field(..., min_length=1, max_length=50, description="Название активности, от 1 до 50 символов")
-    url: str = Field(..., min_length=1, max_length=200, description="URL активности, от 1 до 200 символов")
+    url: Optional[str] = Field(None, min_length=1, max_length=200, description="URL активности, от 1 до 200 символов")
     description: str = Field(..., description="Описание активности")
     os: OS = Field(..., description="Операционная система")
 
