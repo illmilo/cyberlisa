@@ -7,8 +7,8 @@
   "actions": [
     {
       "id": 1,
-      "name": "firefox",
-      "url": "firefox.com",
+      "name": "duckduckgo",
+      "url": "duckduckgo.com",
       "description": "Default description",
       "os": "linux"
     },

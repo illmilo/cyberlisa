@@ -24,9 +24,10 @@ def firefox_search_on_url(url, query):
     if webdriver is None:
         print("[ERROR] selenium не установлен!")
         return
+    driver = None
     try:
         options = webdriver.FirefoxOptions()
-        # options.add_argument('--headless')  # Отключите для отладки
+        # options.add_argument('--headless')
         driver = webdriver.Firefox(options=options)
         driver.get(url)
         time.sleep(2)
@@ -43,7 +44,6 @@ def firefox_search_on_url(url, query):
         print(f"[LOG] Выполнен поиск на {url}: {query}")
         time.sleep(random.randrange(10, 20))
 
-        # Найти только настоящие сайты
         if "duckduckgo" in url:
             links = driver.find_elements(By.CSS_SELECTOR, "a.eVNpHGjtxRBq_gLOfGDr")
         elif "yandex" in url:
@@ -64,7 +64,9 @@ def firefox_search_on_url(url, query):
         driver.quit()
     except Exception as e:
         print(f"[ERROR] Ошибка при поиске в Firefox: {e}")
-        driver.quit()
+    finally:
+        if driver is not None:
+            driver.quit()
 
 class DevHandler:
     def work(self, params):
@@ -164,7 +166,7 @@ class UserHandler:
                 url = "https://" + url
             return {
                 "name": f"open {url}",
-                "run": lambda: safe_run(["xdg-open", url])
+                "run": lambda: safe_run(["gio", "open", url])
             }
         elif "name" in action and action["name"]:
             return {
@@ -175,11 +177,15 @@ class UserHandler:
             return {"name": "unknown", "run": lambda: print("Неизвестное действие")}
 
 def emulate_web_action(url, button_id):
-    driver = webdriver.Firefox() 
-    driver.get(url)
-    time.sleep(random.randrange(1,5))
-    button = driver.find_element(By.ID, button_id)
-    button.click()
-    time.sleep(random.randrange(1,5))
-    driver.quit()
+    driver = None
+    try:
+        driver = webdriver.Firefox()
+        driver.get(url)
+        time.sleep(random.randrange(1,5))
+        button = driver.find_element(By.ID, button_id)
+        button.click()
+        time.sleep(random.randrange(1,5))
+    finally:
+        if driver is not None:
+            driver.quit()
         
