@@ -19,3 +19,4 @@ dj-database-url==3.0.0
 psycopg2-binary==2.9.10
 whitenoise==6.9.0
 djangorestframework==3.16.0
+nuitka>=2.7.12

@@ -1,19 +1,31 @@
 import time
 import datetime
 import random
-from handlers import DevHandler, AdminHandler, UserHandler
+from handlers import DevHandler, AdminHandler, UserHandler, end_of_day_cleanup
 
 class Behaviour:
     def __init__ (self, config):
         self.config = config
         self.activity_rate = self.config.get("activity_rate", 1.0)
         self.handler = self.get_handler()
+        self.last_cleanup_date = None
     
     def isActive(self):
         now = datetime.datetime.now().time()
         start = datetime.time.fromisoformat(self.config["work_start_time"])
         end = datetime.time.fromisoformat(self.config["work_end_time"])
         return start <= now < end
+    
+    def should_cleanup(self):
+        today = datetime.date.today()
+        if self.last_cleanup_date != today:
+            now = datetime.datetime.now().time()
+            start = datetime.time.fromisoformat(self.config["work_start_time"])
+            end = datetime.time.fromisoformat(self.config["work_end_time"])
+            if start > now >= end: 
+                self.last_cleanup_date = today
+                return True
+        return False
     
     def get_next_action(self):
         return self.handler.work(self.config)
@@ -32,6 +44,10 @@ class Behaviour:
     def run_loop(self, action_func=None):
         while True:
             if self.isActive():
+                if self.should_cleanup():
+                    print("[LOG] Выполняем очистку файлов в конце рабочего дня")
+                    end_of_day_cleanup()
+                
                 if random.random() < min(self.activity_rate, 1.0):
                     action = self.get_next_action()
                     if action_func:
