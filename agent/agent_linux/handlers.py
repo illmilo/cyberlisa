@@ -2,6 +2,12 @@ import subprocess
 import random
 import time
 from urllib.parse import urlparse, parse_qs, unquote
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+
 
 def safe_run(cmd, shell=False):
     try:
@@ -10,25 +16,17 @@ def safe_run(cmd, shell=False):
         print(f"[LOG] Команда завершилась с кодом: {result.returncode}")
     except Exception as e:
         print(f"[ERROR] Ошибка при выполнении команды {cmd}: {e}")
-
-try:
-    from selenium import webdriver
-    from selenium.webdriver.common.by import By
-    from selenium.webdriver.common.keys import Keys
-except ImportError:
-    webdriver = None
-    By = None
-    Keys = None
-
 def firefox_search_on_url(url, query):
     if webdriver is None:
         print("[ERROR] selenium не установлен!")
         return
     driver = None
     try:
-        options = webdriver.FirefoxOptions()
-        # options.add_argument('--headless')
-        driver = webdriver.Firefox(options=options)
+        options = Options()
+        options.binary_location = "/snap/firefox/current/usr/lib/firefox/firefox"
+
+        service = Service(executable_path="/snap/firefox/current/usr/lib/firefox/geckodriver")
+        driver = webdriver.Firefox(service=service, options=options)
         driver.get(url)
         time.sleep(2)
         if "duckduckgo" in url:

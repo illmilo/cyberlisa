@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="favicon" href="{% static 'dashboard/images/logo.png' %}">
+    <link rel="icon" href="{% static 'dashboard/images/logo.png' %}">
+    <title>{% block title %}Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}" type="text/css">
+    {% block style %}{% endblock %}
+</head>
+<body>
+    <div class="container">
+        <header style="position:relative;">
+            <h1>{% block header %}Dashboard{% endblock %}</h1>
+            <a href="{% url 'dashboard' %}" style="position:absolute; top: -2px; right: 0;">
+                <img src="{% static 'dashboard/images/home.png' %}">
+            </a>
+        </header>
+    
+        <div class="dashboard-stats">
+            <a href="{% url 'users' %}" class="stat-card" id="blue">
+                <img src="{% static 'dashboard/images/users.png' %}">
+                <div class="stat-desc">
+                    <h2>Users</h2>
+                    <span class="stat-value">Total Users: {{ users|length }}</span>
+                </div>
+            </a>
+            
+            <a href="{% url 'servers' %}" class="stat-card" id="green">
+                <img src="{% static 'dashboard/images/servers.png' %}">
+                <div class="stat-desc">
+                    <h2>Servers</h2>
+                    <span class="stat-value">Active Servers: {{ servers|length }}</span>
+                </div>
+            </a>
+        </div>
+    </div>
+    <hr>
+    {% block content %}
+    <div class="lisa-section">
+        <h2>LISA</h2>
+        <p>
+            LISA is a system that simulates realistic user behavior within an isolated training infrastructure of a cyber range. The purpose of the system is to create a background of "peaceful" activity that enables conducting detection and incident analysis training in conditions close to real ones.
+        </p>
+    </div>
+    {% endblock %}
+
+    {% block script %}{% endblock %}
+</body>
+</html>
