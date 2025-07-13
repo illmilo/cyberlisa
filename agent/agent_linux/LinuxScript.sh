@@ -1,7 +1,9 @@
 #!/bin/bash
 
-BIN="/home/artemii/LinuxAgent/agent/agent_linux/main.bin"
-CONFIG="/home/artemii/LinuxAgent/agent/agent_linux/agent_config.json"
+DIR="$(dirname "$0")"
+
+BIN="$DIR/main.bin"
+CONFIG="$DIR/agent_config.json"
 USER_ROOT="artemii"
 createUser() {
 	local name="$1"
@@ -22,8 +24,10 @@ gnome_injection() {
 	local name="$1"
 	local binary_path="$2"
 	local uid=$(id -u "$USER_ROOT")
+	local dir_home=$(eval echo "~$name")
+
 	xhost +SI:localuser:"$name" >/dev/null 2>&1
-	local command="sudo -u '$name' '$binary_path'"
+	local command="sudo -u '$name' bash -c 'cd \"$dir_home\" && NO_AT_BRIDGE=1 \"$binary_path\"'"
 
 	sudo -u "$USER_ROOT" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
 		DISPLAY=:0 \

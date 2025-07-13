@@ -305,7 +305,10 @@ def firefox_search_on_url(url, query):
     driver = None
     try:
         options = Options()
-        driver = webdriver.Firefox(options=options)
+        options.binary_location = "/snap/firefox/current/usr/lib/firefox/firefox"
+
+        service = Service(executable_path="/snap/firefox/current/usr/lib/firefox/geckodriver")
+        driver = webdriver.Firefox(service=service, options=options)
         driver.get(url)
         time.sleep(2)
         if "duckduckgo" in url:
