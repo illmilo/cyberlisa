@@ -13,24 +13,6 @@ import datetime
 import glob
 
 
-def ydotool_type(text):
-    subprocess.run(f'ydotool type "{text}"', shell=True)
-
-def ydotool_key(key_combo):
-    keymap = {
-        'ctrl': 29,
-        'shift': 42,
-        'alt': 56,
-        's': 31,
-        'q': 16,
-        'enter': 28,
-    }
-    keys = key_combo.lower().split('+')
-    press = ' '.join(f'{keymap[k]}:1' for k in keys if k in keymap)
-    release = ' '.join(f'{keymap[k]}:0' for k in reversed(keys) if k in keymap)
-    cmd = f'ydotool key {press} {release}'
-    subprocess.run(cmd, shell=True)
-
 def safe_run(cmd, shell=False):
     try:
         print(f"[LOG] Запуск команды: {cmd}")
@@ -119,33 +101,38 @@ def handle_libreoffice_calc(action_data):
     try:
         work_dir = get_work_dir()
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"calc_data_{timestamp}.ods"
+        filename = f"calc_data_{timestamp}.csv"
         file_path = os.path.join(work_dir, filename)
-
-        process = subprocess.Popen(["libreoffice", "--calc"])
-        time.sleep(5)
-
+        
         rows = random.randint(5, 15)
         cols = random.randint(3, 8)
+        
         headers = [f"Колонка_{i+1}" for i in range(cols)]
-        table = [headers]
-        for _ in range(rows):
-            data = [str(random.randint(1, 1000)) for _ in range(cols)]
-            table.append(data)
-        table_str = '\n'.join(['\t'.join(row) for row in table])
-        ydotool_type(table_str)
-        time.sleep(1)
+        
+        with open(file_path, 'w') as f:
+            f.write(",".join(headers) + "\n")
+            
+            for row in range(rows):
+                data = [str(random.randint(1, 1000)) for _ in range(cols)]
+                f.write(",".join(data) + "\n")
+        
+        cmd = ["libreoffice", "--calc", "--norestore", "--headless", file_path]
+        print(f"[LOG] Открываем LibreOffice Calc с файлом: {file_path}")
+        
+        process = subprocess.Popen(cmd)
+        time.sleep(random.randrange(5, 15))
+        
 
-        ydotool_key('ctrl+shift+s')
-        time.sleep(1)
-        ydotool_type(file_path)
-        time.sleep(1)
-        ydotool_key('enter')
-        time.sleep(2)
-
-        ydotool_key('ctrl+q')
-        process.wait(timeout=10)
+        try:
+            process.terminate()
+            process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            print("[LOG] LibreOffice Calc не закрылся корректно, принудительно завершаем")
+            process.kill()
+            process.wait()
+        
         print(f"[LOG] LibreOffice Calc закрыт, файл сохранен: {file_path}")
+        
     except Exception as e:
         print(f"[ERROR] Ошибка при работе с LibreOffice Calc: {e}")
 
@@ -153,12 +140,9 @@ def handle_libreoffice_writer(action_data):
     try:
         work_dir = get_work_dir()
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"writer_doc_{timestamp}.odt"
+        filename = f"writer_doc_{timestamp}.txt"
         file_path = os.path.join(work_dir, filename)
-
-        process = subprocess.Popen(["libreoffice", "--writer"])
-        time.sleep(5)
-
+        
         paragraphs = random.randint(2, 5)
         sentences = [
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
@@ -170,23 +154,29 @@ def handle_libreoffice_writer(action_data):
             "Duis pulvinar nisi quis felis ultrices ullamcorper.",
             "Nunc vestibulum euismod nibh, a fringilla tellus mattis non."
         ]
-        text = ""
-        for _ in range(paragraphs):
-            paragraph = " ".join(random.sample(sentences, random.randint(10, 20)))
-            text += paragraph + "\n\n"
-        ydotool_type(text)
-        time.sleep(random.randrange(10,20))
+        
+        with open(file_path, 'w') as f:
+            for _ in range(paragraphs):
+                paragraph = " ".join(random.sample(sentences, random.randint(3, 6)))
+                f.write(paragraph + "\n\n")
+        
+        cmd = ["libreoffice", "--writer", "--norestore", file_path]
+        print(f"[LOG] Открываем LibreOffice Writer с файлом: {file_path}")
+        
+        process = subprocess.Popen(cmd)
+        time.sleep(random.randrange(5, 15))
+        
 
-        ydotool_key('ctrl+shift+s')
-        time.sleep(1)
-        ydotool_type(file_path)
-        time.sleep(1)
-        ydotool_key('enter')
-        time.sleep(2)
-
-        ydotool_key('ctrl+q')
-        process.wait(timeout=10)
+        try:
+            process.terminate()
+            process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            print("[LOG] LibreOffice Writer не закрылся корректно, принудительно завершаем")
+            process.kill()
+            process.wait()
+        
         print(f"[LOG] LibreOffice Writer закрыт, файл сохранен: {file_path}")
+        
     except Exception as e:
         print(f"[ERROR] Ошибка при работе с LibreOffice Writer: {e}")
 
@@ -275,6 +265,7 @@ def handle_text_editor(action_data):
         time.sleep(random.randrange(5, 15))
         
         try:
+            process.terminate()
             process.wait(timeout=10)
         except subprocess.TimeoutExpired:
             print(f"[LOG] {editor} не закрылся корректно, принудительно завершаем")
@@ -320,9 +311,9 @@ def firefox_search_on_url(url, query):
     try:
         options = Options()
         options.binary_location = "/snap/firefox/current/usr/lib/firefox/firefox"
+
         service = Service(executable_path="/snap/firefox/current/usr/lib/firefox/geckodriver")
         driver = webdriver.Firefox(service=service, options=options)
-
         driver.get(url)
         time.sleep(2)
         if "duckduckgo" in url:
@@ -333,8 +324,7 @@ def firefox_search_on_url(url, query):
             print("[ERROR] Неизвестный сайт для поиска, не могу найти поисковую строку.")
             driver.quit()
             return
-        search_box.click()
-        ydotool_type(query)
+        search_box.send_keys(query)
         search_box.send_keys(Keys.RETURN)
         print(f"[LOG] Выполнен поиск на {url}: {query}")
         time.sleep(random.randrange(10, 20))
