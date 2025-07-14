@@ -77,10 +77,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Database configuration
-DATABASES = {
-    'default': {
-    }
-}
+DATABASES = {}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -118,12 +115,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'api/static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 
 # Debug mode handling
-if 'VERCEL' in os.environ:
-    DEBUG = False
-    ALLOWED_HOSTS = ['.vercel.app']
-else:
-    DEBUG = True
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+DEBUG = False if 'VERCEL' in os.environ else True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

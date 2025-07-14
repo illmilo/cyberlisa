@@ -18,11 +18,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Event delegation for action buttons
         serverListContainer.addEventListener('click', async (event) => {
-            const userId = event.target.closest('[data-server-id]')?.dataset.serverId;
-            if (!userId) return;
+            const serverId = event.target.closest('[data-server-id]')?.dataset.serverId;
+            if (!serverId) return;
             
             if (event.target.classList.contains('delete-btn')) {
-                await deleteServer(userId);
+                await deleteServer(serverId);
             }
         });
     } else {
@@ -39,8 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const items = serverListContainer.querySelectorAll('.list-item');
         const lowerQuery = query.trim().toLowerCase();
         items.forEach(item => {
-            // Ищем имя пользователя только по h3 внутри .user-info
-            const nameElem = item.querySelector('.user-info h3');
+            const nameElem = item.querySelector('.server-info h3');
             const name = nameElem ? nameElem.textContent.toLowerCase() : '';
             item.style.display = name.includes(lowerQuery) ? '' : 'none';
         });
@@ -65,12 +64,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const servers = await response.json();
             renderServersList(servers);
         } catch (error) {
-            console.error('Error loading users:', error);
-            alert(`Error loading users: ${error.message}`);
+            console.error('Error loading servers:', error);
+            alert(`Error loading servers: ${error.message}`);
         }
     }
 
-    // Render user list safely
     function renderServersList(servers) {
         if (!serverListContainer) {
             console.warn("Cannot render servers list: container not found");
@@ -80,19 +78,17 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear existing content
         serverListContainer.innerHTML = '';
         
-        // Handle empty user list
         if (!servers || servers.length === 0) {
             serverListContainer.innerHTML = '<div class="no-servers">No servers found</div>';
             return;
         }
         
-        // Handle both single user and array responses
         const serverArray = Array.isArray(servers) ? servers : [servers];
         
         serverArray.forEach(server => {
             const serverElement = document.createElement('div');
             serverElement.className = 'list-item';
-            serverElement.dataset.userId = server.id;
+            serverElement.dataset.serverId = server.id;
             serverElement.innerHTML = `
                 <div class="server-info">
                     <h3>${server.name || 'Unnamed Server'}</h3>
@@ -108,7 +104,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Create new user with better error handling
     async function createServer() {
         try {
             const formData = {
@@ -156,9 +151,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Delete user with better error handling
     async function deleteServer(serverId) {
-        if (!confirm(`Delete user ${serverId}?`)) return;
+        if (!confirm(`Delete server ${serverId}?`)) return;
         
         try {
             const response = await fetch(`${API_BASE_URL}/${serverId}/`, {
@@ -185,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             const result = await response.json();
-            alert(result.message || `User ${serverId} deleted successfully`);
+            alert(result.message || `Server ${serverId} deleted successfully`);
             loadServers();
         } catch (error) {
             console.error('Error deleting server:', error);
