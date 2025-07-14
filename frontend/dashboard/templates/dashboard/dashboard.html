@@ -4,35 +4,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="favicon" href="{% static 'dashboard/images/logo.png' %}">
-    <link rel="icon" href="{% static 'dashboard/images/logo.png' %}">
+    <link rel="favicon" href="{% static 'dashboard/images/logo.svg' %}">
+    <link rel="icon" href="{% static 'dashboard/images/logo.svg' %}">
     <title>{% block title %}Dashboard{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     {% block style %}{% endblock %}
 </head>
 <body>
     <div class="container">
         <header style="position:relative;">
             <h1>{% block header %}Dashboard{% endblock %}</h1>
-            <a href="{% url 'dashboard' %}" style="position:absolute; top: -2px; right: 0;">
-                <img src="{% static 'dashboard/images/home.png' %}">
-            </a>
         </header>
     
         <div class="dashboard-stats">
-            <a href="{% url 'users' %}" class="stat-card" id="blue">
-                <img src="{% static 'dashboard/images/users.png' %}">
+            <a href="{% url 'dashboard' %}" class="stat-card" style="background: linear-gradient(90deg, #f75555, #ce2222);">
+                <i class="fa-solid fa-house fa-2xl" style="color:aliceblue"></i>
+                <h2 id="home-text">Dashboard</h2>
+            </a>
+            <a href="{% url 'agents' %}" class="stat-card" style="background: linear-gradient(90deg, #A855F7, #7E22CE);">
+                <i class="fa-solid fa-users fa-2xl" style="color:aliceblue"></i>
                 <div class="stat-desc">
-                    <h2>Users</h2>
-                    <span class="stat-value">Total Users: {{ users|length }}</span>
+                    <h2>Agents</h2>
                 </div>
             </a>
             
-            <a href="{% url 'servers' %}" class="stat-card" id="green">
-                <img src="{% static 'dashboard/images/servers.png' %}">
+            <a href="{% url 'servers' %}" class="stat-card" style="background: linear-gradient(90deg, #3B82F6, #1D4ED8);">
+                <i class="fa-solid fa-server fa-2xl" style="color:aliceblue"></i>
                 <div class="stat-desc">
                     <h2>Servers</h2>
-                    <span class="stat-value">Active Servers: {{ servers|length }}</span>
+                </div>
+            </a>
+
+            <a href="{% url 'roles' %}" class="stat-card" style="background: linear-gradient(90deg, #22C55E, #15803D);">
+                <i class="fa-solid fa-list fa-2xl" style="color:aliceblue"></i>
+                <div class="stat-desc">
+                    <h2>Roles</h2>
                 </div>
             </a>
         </div>

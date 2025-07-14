@@ -14,6 +14,7 @@
 
 .flextable {
     display: flex;
+    flex-direction: column-reverse;
     margin: 0 auto;
     box-shadow: 0 5px 15px rgba(0,0,0,0.08);
     border-radius: 12px;
@@ -28,7 +29,6 @@
     padding: 25px;
     display: flex;
     flex-direction: column;
-    /* height:max-content; */
 }
 
 .search-box {
@@ -153,6 +153,8 @@ span.anchor {
     transition: background 0.3s;
     font-weight: 600;
     margin-top: 15px;
+    /* make it appear on the right */
+    margin-left: auto;
 }
 
 .submit-btn:hover {
@@ -161,16 +163,10 @@ span.anchor {
 
 /* Responsive design */
 @media (max-width: 1024px) {
-    .container {
-        flex-direction: column;
-    }
     
-    .sidebar {
+    /* .sidebar {
         flex: 0 0 auto;
-    }
-    .flextable {
-        flex-direction: column-reverse;
-    }
+    } */
 }
 
 select[multiple] {
@@ -245,6 +241,21 @@ span.anchor {
     color:#757575;
 }
 
-.list {
-    width:60vw;
+.list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.user-info {
+    display: flex;
+    width:100%;
+    justify-content: space-between;
+    /* flex-direction: column; */
 }

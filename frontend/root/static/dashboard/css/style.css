@@ -6,7 +6,12 @@
 }
 
 body {
-    background-color: #1a1a2e;
+    background-color: #1f1f37;
+    background-image: url('../images/logo.svg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-blend-mode:color-burn;
+    background-position: 18vw -8vh;
     color: #333;
     padding: 20px;
     position: relative;
@@ -71,25 +76,8 @@ h1 {
     margin: 0;
 }
 
-.stat-value {
-    font-size: 0.8em;
-    font-weight: 400;
-}
-
 .stat-card img {
     width: 25px;
-}
-
-#blue {
-    background: linear-gradient(90deg, #3B82F6, #1D4ED8);
-}
-
-#green {
-    background: linear-gradient(90deg, #22C55E, #15803D);
-}
-
-#purple {
-    background: linear-gradient(90deg, #A855F7, #7E22CE);
 }
 
 hr {
