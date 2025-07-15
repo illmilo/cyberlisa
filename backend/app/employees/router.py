@@ -1,25 +1,30 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Body
 from app.employees.models import Employee
 from app.activities.models import Activity
 from app.database import async_session_maker
 from sqlalchemy import select
-from app.employees.dao import EmployeeDAO
+from app.employees.dao import EmployeeDAO, get_heartbeat_status
 from app.employees.rb import RBEmp
-from app.employees.schemas import EmployeeSchema, EmployeeCreateSchema, EmployeeUpdateSchema
+from app.employees.schemas import EmployeeSchema, EmployeeCreateSchema, EmployeeUpdateSchema, EmployeeSchemaWnoActivities
 from typing import List
 import json 
 import os
 import shutil
+from app.servers.dao import ServerDAO
+from app.servers.schemas import ServerSchema
+from datetime import datetime, timedelta
 
 router_employees = APIRouter(prefix = '/agents', tags = ['Работа с агентами'])
 
+# Просто возвращаем данные из базы, не вычисляем heartbeat_status
 @router_employees.get("/", summary = 'Получить всех агентов')
-async def get_all_employees(request_body: RBEmp = Depends()):
-    return await EmployeeDAO.find_all(**request_body.to_dict())   
+async def get_all_employees(request_body: RBEmp = Depends()) -> list[EmployeeSchemaWnoActivities]:
+    employees = await EmployeeDAO.find_all(**request_body.to_dict())
+    return employees
 
 @router_employees.get("/{employee_id}", summary = 'Получить агента по ID')
 async def get_employee_by_id(employee_id: int) -> EmployeeSchema | dict:
-    employee = await EmployeeDAO.find_full_data(employee_id) 
+    employee = await EmployeeDAO.find_full_data(employee_id)
     if not employee:
         return {"error": "Агент c ID " + str(employee_id) + " не найден"}
     return employee
@@ -36,23 +41,14 @@ async def create_employee(employee_data: EmployeeCreateSchema):
     async with async_session_maker() as session:
         employee_dict = {
             "name": employee_data.name,
-            "role": employee_data.role.value,
+            "role_id": employee_data.role_id,
             "os": employee_data.os.value,
-            "online": employee_data.online,
             "work_start_time": employee_data.work_start_time,
             "work_end_time": employee_data.work_end_time,
             "activity_rate": employee_data.activity_rate,
+            "server_id": employee_data.server_id,
+            "last_heartbeat": employee_data.last_heartbeat
         }
-        if employee_data.activity_now is not None and employee_data.activity_now > 0:
-            activity = await session.get(Activity, employee_data.activity_now)
-            if activity:
-                employee_dict["activity_now"] = employee_data.activity_now
-            else:
-                raise HTTPException(
-                    status_code=400, 
-                    detail=f"Активность с ID {employee_data.activity_now} не найдена"
-                )
-        
         new_employee = Employee(**employee_dict)
         session.add(new_employee)
         await session.commit()
@@ -65,32 +61,14 @@ async def update_employee(employee_id: int, employee_data: EmployeeUpdateSchema)
         employee = await session.get(Employee, employee_id)
         if not employee:
             raise HTTPException(status_code=404, detail=f"Агент с ID {employee_id} не найден")
-        
         update_data = employee_data.model_dump(exclude_unset=True)
-        
-        if 'role' in update_data:
-            update_data['role'] = update_data['role'].value
+        if 'role_id' in update_data:
+            setattr(employee, 'role_id', update_data['role_id'])
+            update_data.pop('role_id')
         if 'os' in update_data:
             update_data['os'] = update_data['os'].value
-        
-        if 'activity_now' in update_data:
-            activity_now_value = update_data.pop('activity_now')
-            
-            if activity_now_value is None or activity_now_value == 0:
-                employee.activity_now = None
-            else:
-                activity = await session.get(Activity, activity_now_value)
-                if activity:
-                    employee.activity_now = activity_now_value
-                else:
-                    raise HTTPException(
-                        status_code=400, 
-                        detail=f"Активность с ID {activity_now_value} не найдена"
-                    )
-            
         for field, value in update_data.items():
             setattr(employee, field, value)
-        
         await session.commit()
         await session.refresh(employee)
         return employee
@@ -123,9 +101,8 @@ async def add_activity_to_employee(employee_id: int, activity_id: int):
         raise HTTPException(status_code=404, detail=str(e))
     
 
-@router_employees.post("/{employee_id}/start_agent", summary="запустить linux-агента")
+@router_employees.post("/{employee_id}/start_agent", summary="Запустить linux-агента")
 async def start_agent(employee_id: int):
-    await EmployeeDAO.set_online_status(employee_id, True)
     config = await EmployeeDAO.get_agent_config_from_db(employee_id)
     if not config:
         raise HTTPException(status_code=404, detail="Агент не найден")
@@ -142,15 +119,33 @@ async def start_agent(employee_id: int):
     with open(config_path, "w") as f:
         json.dump(config, f, indent=2)
 
+    server_id = config.get("server_id")
+    if server_id:
+        from app.servers.dao import ServerDAO
+        from app.servers.schemas import ServerSchema
+        server = await ServerDAO.get_server_by_id(server_id)
+        if server:
+            server_config = ServerSchema.model_validate(server, from_attributes=True).model_dump()
+            server_config_path = os.path.join(agent_dir, "server_config.json")
+            with open(server_config_path, "w") as f:
+                json.dump(server_config, f, indent=2)
+
     return {"status": "ok", "agent_dir": agent_dir, "config_path": config_path}
 
     #дальше докер деплоит агента на сервер
 
 
-@router_employees.post("/{employee_id}/stop_agent", summary="остановить linux-агента")
+@router_employees.post("/{employee_id}/stop_agent", summary="Остановить linux-агента")
 async def stop_agent(employee_id: int):
-    await EmployeeDAO.set_online_status(employee_id, False)
-   #дальше докер останавливает агента 
+    pass  # дальше докер останавливает агента
+
+
+@router_employees.post("/{employee_id}/heartbeat", summary="Приём heartbeat от агента")
+async def agent_heartbeat(employee_id: int, status: str = Body(...)):
+    async with async_session_maker() as session:
+        await EmployeeDAO.update_heartbeat_and_status(employee_id, status, session)
+    return {"status": "heartbeat received"}
+
 
 
 

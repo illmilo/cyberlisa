@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.employees.router import router_employees
 from app.activities.router import router_activities
 from app.servers.router import router_servers
+from app.roles.router import router_roles
 
 
 from app.employees.models import Employee
@@ -28,3 +29,4 @@ def root():
 app.include_router(router_employees)
 app.include_router(router_activities)
 app.include_router(router_servers)
+app.include_router(router_roles)

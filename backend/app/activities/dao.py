@@ -23,7 +23,6 @@ class ActivityDAO(BaseDAO):
 
     @classmethod
     async def find_with_employees(cls, activity_id: int):
-        """Получить активность со связанными сотрудниками"""
         async with async_session_maker() as session:
             query_activity = select(cls.model).options(joinedload(cls.model.employees)).filter_by(id=activity_id)
             result_activity = await session.execute(query_activity)

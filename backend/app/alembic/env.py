@@ -16,6 +16,7 @@ from app.database import DATABASE_URL, Base
 from app.employees.models import Employee
 from app.activities.models import Activity
 from app.servers.models import Server
+from app.roles.models import Role
 
 
 

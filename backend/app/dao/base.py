@@ -1,4 +1,5 @@
 from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 from app.database import async_session_maker
 from app.employees.models import Employee
 

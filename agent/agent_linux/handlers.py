@@ -160,7 +160,7 @@ def handle_libreoffice_writer(action_data):
                 paragraph = " ".join(random.sample(sentences, random.randint(3, 6)))
                 f.write(paragraph + "\n\n")
         
-        cmd = ["libreoffice", "--writer", "--norestore", file_path]
+        cmd = ["libreoffice", "--writer", "--norestore", "--headless", file_path]
         print(f"[LOG] Открываем LibreOffice Writer с файлом: {file_path}")
         
         process = subprocess.Popen(cmd)
@@ -186,96 +186,6 @@ def handle_terminal_command(action_data):
         safe_run(command.split(), shell=True)
     else:
         print("[WARNING] Пустая команда")
-
-def handle_gimp(action_data):
-    try:
-        work_dir = get_work_dir()
-        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"gimp_image_{timestamp}.png"
-        file_path = os.path.join(work_dir, filename)
-        
-        try:
-            cmd = ["convert", "-size", "800x600", "xc:white", file_path]
-            safe_run(cmd)
-        except:
-            with open(file_path, 'w') as f:
-                f.write("GIMP placeholder file")
-        
-        cmd = ["gimp", file_path]
-        print(f"[LOG] Открываем GIMP с файлом: {file_path}")
-        
-        process = subprocess.Popen(cmd)
-        time.sleep(random.randrange(5, 15))
-        
-        try:
-            process.terminate()
-            process.wait(timeout=10)
-        except subprocess.TimeoutExpired:
-            print("[LOG] GIMP не закрылся корректно, принудительно завершаем")
-            process.kill()
-            process.wait()
-        
-        print(f"[LOG] GIMP закрыт, файл сохранен: {file_path}")
-        
-    except Exception as e:
-        print(f"[ERROR] Ошибка при работе с GIMP: {e}")
-
-def handle_text_editor(action_data):
-    try:
-        work_dir = get_work_dir()
-        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"text_doc_{timestamp}.txt"
-        file_path = os.path.join(work_dir, filename)
-        
-        content = [
-            "Это автоматически созданный текстовый документ.",
-            "Создан: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "",
-            "Содержимое документа:",
-            "- Строка 1: Информация о проекте",
-            "- Строка 2: Заметки и идеи", 
-            "- Строка 3: Планы на будущее",
-            "",
-            "Конец документа."
-        ]
-        
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(content))
-        
-        editors = ["gedit", "nano", "vim"]
-        editor = None
-        
-        for ed in editors:
-            try:
-                result = subprocess.run(["which", ed], capture_output=True, text=True)
-                if result.returncode == 0:
-                    editor = ed
-                    break
-            except:
-                continue
-        
-        if not editor:
-            print("[WARNING] Не найден подходящий текстовый редактор")
-            return
-        
-        cmd = [editor, file_path]
-        print(f"[LOG] Открываем {editor} с файлом: {file_path}")
-        
-        process = subprocess.Popen(cmd)
-        time.sleep(random.randrange(5, 15))
-        
-        try:
-            process.terminate()
-            process.wait(timeout=10)
-        except subprocess.TimeoutExpired:
-            print(f"[LOG] {editor} не закрылся корректно, принудительно завершаем")
-            process.kill()
-            process.wait()
-        
-        print(f"[LOG] {editor} закрыт, файл сохранен: {file_path}")
-        
-    except Exception as e:
-        print(f"[ERROR] Ошибка при работе с текстовым редактором: {e}")
 
 #ACTIVITY CENTER  
 
@@ -310,10 +220,10 @@ def firefox_search_on_url(url, query):
     driver = None
     try:
         options = Options()
-        options.binary_location = "/snap/firefox/current/usr/lib/firefox/firefox"
-
-        service = Service(executable_path="/snap/firefox/current/usr/lib/firefox/geckodriver")
-        driver = webdriver.Firefox(service=service, options=options)
+        options.add_argument("--headless")
+        # options.binary_location = ... # оставить как есть, если нужно
+        # service = ... # оставить как есть, если нужно
+        driver = webdriver.Firefox(options=options)
         driver.get(url)
         time.sleep(2)
         if "duckduckgo" in url:

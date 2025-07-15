@@ -8,6 +8,11 @@ class OS(Enum):
     UNKNOWN = "unknown"
 
 
+class EmployeeShallowSchema(BaseModel):
+    id: int
+    name: str
+
+
 class ActivitySchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
@@ -15,7 +20,7 @@ class ActivitySchema(BaseModel):
     url: Optional[str] = Field(None, min_length=1, max_length=200, description="URL активности, от 1 до 200 символов")
     description: str = Field(..., description="Описание активности")
     os: OS = Field(..., description="Операционная система")
-    employees: List["EmployeeSchema"] = Field(default_factory=list, description="Агенты, которым назначена активность")
+    employees: List[EmployeeShallowSchema] = Field(default_factory=list, description="Агенты, которым назначена активность")
 
 
 class ActivityCreateSchema(BaseModel):
@@ -31,5 +36,10 @@ class ActivityUpdateSchema(BaseModel):
     description: Optional[str] = Field(None, description="Описание активности")
     os: Optional[OS] = Field(None, description="Операционная система")
 
-from app.employees.schemas import EmployeeSchema
-ActivitySchema.model_rebuild()
+
+class ActivityShallowSchema(BaseModel):
+    id: int
+    name: str
+    url: Optional[str] = None
+    description: str
+    os: OS
