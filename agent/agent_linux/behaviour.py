@@ -2,6 +2,7 @@ import time
 import datetime
 import random
 from handlers import DevHandler, AdminHandler, UserHandler, end_of_day_cleanup
+<<<<<<< HEAD
 import requests
 
 
@@ -13,6 +14,8 @@ def send_heartbeat(employee_id, backend_url="http://localhost:8000"):
     except Exception as e:
         print(f"[HEARTBEAT] Failed to send heartbeat: {e}")
 
+=======
+>>>>>>> origin/fuckYou
 
 class Behaviour:
     def __init__ (self, config):
@@ -20,8 +23,11 @@ class Behaviour:
         self.activity_rate = self.config.get("activity_rate", 1.0)
         self.handler = self.get_handler()
         self.last_cleanup_date = None
+<<<<<<< HEAD
         self.heartbeat_interval = 2 * 60 * 60 
         self.backend_url = "http://localhost:8000"
+=======
+>>>>>>> origin/fuckYou
     
     def isActive(self):
         now = datetime.datetime.now().time()
@@ -55,12 +61,16 @@ class Behaviour:
 
 
     def run_loop(self, action_func=None):
+<<<<<<< HEAD
         last_heartbeat = 0
         while True:
             now = time.time()
             if now - last_heartbeat > self.heartbeat_interval:
                 send_heartbeat(self.config.get("employee_id", 0), backend_url=self.backend_url)
                 last_heartbeat = now
+=======
+        while True:
+>>>>>>> origin/fuckYou
             if self.isActive():
                 if self.should_cleanup():
                     print("[LOG] Выполняем очистку файлов в конце рабочего дня")

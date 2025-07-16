@@ -1,10 +1,11 @@
 {% extends 'dashboard/dashboard.html' %}
-{% block title %}Users{% endblock %}
-{% block header %}Users{% endblock %}
+{% block title %}Agents{% endblock %}
+{% block header %}Agents{% endblock %}
 {% load static %}
 {% block style %}
-<link rel="stylesheet" href="{% static 'users/css/style.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'agents/css/style.css' %}" type="text/css">
 {% endblock %}
+
 {% block content %}
 </head>
 <body>
@@ -16,23 +17,22 @@
             </div>
             
             <div class="list">
-                <h2>{% block list-header %}User List{% endblock %}</h2>
+                <h2>{% block list-header %}Agent List{% endblock %}</h2>
                 <div class="list-content"></div>
             </div>
         </div>
         
         <!-- Right Column -->
         <div class="main-content">
-            <h1>{% block main-content-header %}Create User{% endblock %}</h1>
+            <h1>{% block main-content-header %}Create Agent{% endblock %}</h1>
             
-            <form class="create-form" id="create-user-form">
+            <form id="create-form">
                 {% csrf_token %}
                 {% block form-groups %}
                 
-                    <!-- username -->
                     <div class="form-group">
-                        <label for="user_name">Username</label>
-                        <input type="text" id="user_name" name="user_name" required>
+                        <label for="agent_name">Agent Name</label>
+                        <input type="text" id="agent_name" name="agent_name" required>
                     </div>
 
                     <!-- role -->
@@ -50,31 +50,28 @@
                         <select id="os" name="os" required>
                             <option value="linux">Linux</option>
                             <option value="windows">Windows</option>
-                            <option value="macos">macOS</option>
-                        </select>
-                    </div>
-
-                    <!-- Activities like word or excel pick -->
-                    <div class="form-group">
-                        <label for="activity">Activity</label>
-                        <select id="activity" name="activity" required>
-                            <option value="word">Word</option>
-                            <option value="excel">Excel</option>
                         </select>
                     </div>
                     
                     <!-- activity rate -->
                     <div class="form-group">
                         <label for="activity_rate">Activity Rate</label>
-                        <input type="number" id="activity_rate" name="activity_rate" required>
+                        <input type="number" min=1 max=100 id="activity_rate" name="activity_rate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="server_id">Server</label>
+                        <select id="server_id" name="id">
+                            <!-- options populated by js -->
+                        </select>
                     </div>
                 {% endblock %}
-                <button type="submit" class="submit-btn">{% block submit-btn %}Create User{% endblock %}</button>
+                <button type="submit" class="submit-btn">{% block submit-btn %}Create Agent{% endblock %}</button>
             </form>
         </div>
     </div>
 {% endblock %}
 {% block script %}
-    <!-- <script src="{% static 'users/js/toggle.js' %}"></script> -->
-    <script src="{% static 'users/js/formHandler.js' %}"></script>
+    <script src="{% static 'servers/js/serverList.js' %}"></script>
+    <script src="{% static 'agents/js/formHandler.js' %}"></script>
 {% endblock %}

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
  # Руководство по добавлению новых активностей
+=======
+# Руководство по добавлению новых активностей
+>>>>>>> origin/fuckYou
 
 ## Обзор архитектуры
 
@@ -65,6 +69,23 @@ elif "your_app" in activity_lower or "yourapp" in activity_lower:
     handle_your_app(action_data)
 ```
 
+<<<<<<< HEAD
+=======
+### Шаг 3: Добавить в конфигурацию
+
+В `agent_config.json` добавьте новую активность:
+
+```json
+{
+  "id": 4,
+  "name": "YourApp",
+  "url": null,
+  "description": "Описание вашего приложения",
+  "os": "linux"
+}
+```
+
+>>>>>>> origin/fuckYou
 ## Доступные данные в action_data
 
 - `name`: Имя активности

@@ -3,7 +3,7 @@ from app.employees.models import Employee
 from app.activities.models import Activity
 from app.database import async_session_maker
 from sqlalchemy import select
-from app.employees.dao import EmployeeDAO, get_heartbeat_status
+from app.employees.dao import EmployeeDAO#, get_heartbeat_status
 from app.employees.rb import RBEmp
 from app.employees.schemas import EmployeeSchema, EmployeeCreateSchema, EmployeeUpdateSchema, EmployeeSchemaWnoActivities
 from typing import List
