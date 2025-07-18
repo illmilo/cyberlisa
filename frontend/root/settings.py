@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'agents',
     'servers',
     'roles',
+    'activities',
 ]
 
 MIDDLEWARE = []
