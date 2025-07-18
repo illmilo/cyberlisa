@@ -17,12 +17,13 @@ class DataPoster {
         try {
             // 1. Prepare the form data
             const formData = this.collectFormData();
-            
+            console.log('Form data collected:', formData);
+
             // 2. Apply transformations if needed
             const finalData = this.options.transformData 
                 ? await this.options.transformData(formData)
                 : formData;
-
+        console.log('Data being sent:', finalData);
             // 3. Optional pre-submit validation/hook
             if (this.options.beforeSubmit) {
                 const shouldProceed = await this.options.beforeSubmit(finalData);
@@ -85,22 +86,35 @@ class DataPoster {
     getElementValue(element) {
         switch (element.type) {
             case 'number':
-                return element.valueAsNumber;
-            case 'checkbox':
-                return element.checked;
-            case 'date':
-                return element.valueAsDate;
-            case 'time':
-                return element.valueAsDate;
-            default:
-                return element.value;
+            return element.value ? element.valueAsNumber : null;
+        case 'checkbox':
+            return element.checked;
+        case 'time':
+            return element.value ? element.value.substring(0, 5) : null;
+        default:
+            return element.value;
         }
     }
 
     async parseError(response) {
         try {
             const errorData = await response.json();
-            return new Error(errorData.detail || errorData.message || JSON.stringify(errorData));
+            
+            // Handle array of errors (common in FastAPI validation)
+            if (Array.isArray(errorData)) {
+                const messages = errorData.map(e => 
+                    e.msg || e.detail || JSON.stringify(e)
+                ).join(', ');
+                return new Error(messages);
+            }
+            
+            // Handle single error object
+            return new Error(
+                errorData.detail || 
+                errorData.message || 
+                errorData.error || 
+                JSON.stringify(errorData)
+            );
         } catch {
             return new Error(await response.text());
         }
@@ -117,9 +131,11 @@ class DataPoster {
 
     handleError(error) {
         console.error(`Error creating ${this.loader.itemType}:`, error);
-        alert(`Error: ${error.message}`);
+        console.error('Error details:', error.message);
+        
+        // More user-friendly error display
+        alert(`Error creating ${this.loader.itemType}:\n${error.message}`);
     }
-
     initialize() {
         const form = document.getElementById(this.options.formId);
         if (form) {
