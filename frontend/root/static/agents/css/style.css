@@ -248,7 +248,7 @@ span.anchor {
     transition: all 0.3s ease;
 }
 
-.user-info {
+.item-info {
     display: flex;
     width:100%;
     justify-content: space-between;

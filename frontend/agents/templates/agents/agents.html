@@ -1,13 +1,14 @@
 {% extends 'dashboard/dashboard.html' %}
+
 {% block title %}Agents{% endblock %}
 {% block header %}Agents{% endblock %}
+
 {% load static %}
 {% block style %}
-<link rel="stylesheet" href="{% static 'agents/css/style.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'agents/css/style.css' %}" type="text/css">
 {% endblock %}
 
 {% block content %}
-</head>
 <body>
     <div class="flextable">
         <!-- Left Column -->
@@ -17,22 +18,23 @@
             </div>
             
             <div class="list">
-                <h2>{% block list-header %}Agent List{% endblock %}</h2>
-                <div class="list-content"></div>
+                <h2>{% block list-header %}Agent{% endblock %} List</h2>
+                <div class="list-content">
+                    <!-- populated by js -->
+                </div>
             </div>
         </div>
         
         <!-- Right Column -->
         <div class="main-content">
-            <h1>{% block main-content-header %}Create Agent{% endblock %}</h1>
+            <h1>Create {% block create-header %}Agent{% endblock %}</h1>
             
             <form id="create-form">
                 {% csrf_token %}
                 {% block form-groups %}
-                
                     <div class="form-group">
-                        <label for="agent_name">Agent Name</label>
-                        <input type="text" id="agent_name" name="agent_name" required>
+                        <label for="name">Agent Name</label>
+                        <input type="text" id="name" name="name" required>
                     </div>
 
                     <!-- role -->
@@ -65,6 +67,18 @@
                             <!-- options populated by js -->
                         </select>
                     </div>
+
+                    <div class="form-group">
+                        <label for="work_start_time">Start Work Time</label>
+                        <input type="time" id="work_start_time" name="work_start_time" required 
+                            value="09:00" min="00:00" max="23:59">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="work_end_time">End Work Time</label>
+                        <input type="time" id="work_end_time" name="work_end_time" required 
+                            value="17:00" min="00:00" max="23:59">
+                    </div>
                 {% endblock %}
                 <button type="submit" class="submit-btn">{% block submit-btn %}Create Agent{% endblock %}</button>
             </form>
@@ -72,6 +86,59 @@
     </div>
 {% endblock %}
 {% block script %}
-    <script src="{% static 'servers/js/serverList.js' %}"></script>
-    <script src="{% static 'agents/js/formHandler.js' %}"></script>
+    <script src="{% static 'js/dataLoader.js' %}"></script>
+    <script src="{% static 'js/listRenderer.js' %}"></script>
+    <script src="{% static 'js/dropdownLoader.js' %}"></script>
+    <script src="{% static 'js/dataDeleter.js' %}"></script>
+    <script src="{% static 'js/dataPoster.js' %}"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // get
+            const agentLoader = new DataLoader('http://localhost:8000/agents', 'agent');
+            // list render
+            const agentRenderer = new ItemRenderer('agent', agentLoader, '.list-content');
+
+            // delete
+            const agentDeleter = new DataDeleter(agentLoader, agentRenderer, {
+                confirmMessage: 'Delete agent {id}?',
+                successMessage: 'Agent {id} deleted successfully'
+            });
+            agentDeleter.setupDeletionListener();
+
+            // post
+            const agentPoster = new DataPoster(
+                agentLoader, 
+                agentRenderer,
+                {
+                    formId: 'agent-form',
+                    fieldMappings: {
+                        name: 'name',
+                        role: 'role',
+                        os: 'os',
+                        activity_rate: 'activity_rate',
+                        server_id: 'server_id',
+                        work_start_time: 'work_start_time',
+                        work_end_time: 'work_end_time'
+                    }
+                }
+            );
+            agentPoster.initialize();
+
+            // get
+            const serverLoader = new DataLoader('http://localhost:8000/servers', 'server');
+
+            // initialize dropdown using existing serverLoader
+            const serverDropdown = new DropdownLoader(
+                serverLoader,      // Reuse the server loader
+                'server_id',       // ID of the select element
+                'name'             // Key to use for display text (optional)
+            );
+            
+            // Populate the dropdown
+            serverDropdown.populate().catch(error => {
+                console.error('Failed to populate server dropdown:', error);
+            });
+        });
+    </script>
 {% endblock %}
